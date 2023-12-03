@@ -47,7 +47,6 @@ describe('AuthService', () => {
 
   describe('/signin (POST)', () => {
     it('should signin', async () => {
-      console.log(user1);
       const result = await service.singin({
         ...user1,
       });

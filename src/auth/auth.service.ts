@@ -31,7 +31,7 @@ export class AuthService {
           throw new BadRequestException('CREDENTIAL_TAKEN');
         }
       }
-      throw new BadRequestException('FAIL_TO_SINGUP');
+      throw new BadRequestException(err.message);
     }
   }
 
