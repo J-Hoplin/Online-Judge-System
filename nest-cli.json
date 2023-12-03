@@ -3,6 +3,18 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true
+  },
+  "projects": {
+    "aws-s3": {
+      "type": "library",
+      "root": "libs/aws-s3",
+      "entryFile": "index",
+      "sourceRoot": "libs/aws-s3/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/aws-s3/tsconfig.lib.json"
+      }
+    }
   }
 }
