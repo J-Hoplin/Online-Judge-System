@@ -9,3 +9,27 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+
+model User {
+  id       String @default(uuid()) @id
+  
+  nickname     String @unique
+
+  password String
+
+  email    String @unique
+
+  message  String? 
+
+  github   String?
+  
+  blog     String?
+
+  @@map("user")
+}
+
+enum UserType {
+  Contributer
+  User
+}
