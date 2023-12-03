@@ -16,6 +16,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "app": ["src"],
+      "app/*": ["src/*"],
+      "s3/aws-s3": ["libs/aws-s3/src"],
+      "s3/aws-s3/*": ["libs/aws-s3/src/*"]
+    }
   }
 }
