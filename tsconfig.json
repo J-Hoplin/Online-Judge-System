@@ -20,6 +20,8 @@
     "paths": {
       "app": ["src"],
       "app/*": ["src/*"],
+      "domain": ["domain"],
+      "domain/*": ["domain/*"],
       "s3/aws-s3": ["libs/aws-s3/src"],
       "s3/aws-s3/*": ["libs/aws-s3/src/*"]
     }

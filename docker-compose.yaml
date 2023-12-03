@@ -10,7 +10,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=hoplin1234!
       - MYSQL_ROOT_HOST=%
-      - MYSQL_DATABASE=dev-team
+      - MYSQL_DATABASE=judge
 networks:
   system:
     driver: bridge
