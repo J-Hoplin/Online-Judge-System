@@ -10,27 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id       String @default(uuid()) @id
-  
-  nickname String @unique
-
-  password String
-
-  email    String @unique
-
-  message  String? 
-
-  github   String?
-  
-  blog     String?
-
-  type     UserType? @default(User)
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  nickname  String    @unique
+  password  String
+  email     String    @unique
+  message   String?
+  github    String?
+  blog      String?
+  type      UserType? @default(User)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  problems  Problem[]
 
   @@map("user")
 }
@@ -39,4 +30,37 @@ enum UserType {
   Admin
   Contributer
   User
+}
+
+model Problem {
+  id            Int    @id @default(autoincrement())
+  title         String // 제목
+  problem       String // 문제
+  input         String // 입력
+  output        String // 출력
+  timeLimit     Int // 시간제한(Second)
+  memoryLimit   Int // 메모리제한(MB)
+  // 1:N relation with User
+  contributerId String
+  contributer   User   @relation(fields: [contributerId], references: [id])
+
+  examples ProblemExample[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("problem")
+}
+
+model ProblemExample {
+  id       Int     @id @default(autoincrement())
+  input    String
+  output   String
+  isPublic Boolean // If it's public example
+
+  // 1:N relation with Problem
+  Problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  problemId Int?
+
+  @@map("problemexample")
 }
