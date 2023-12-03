@@ -1,5 +1,9 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
@@ -7,12 +11,16 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "coverageDirectory": "../e2e-coverage",
-  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "collectCoverageFrom": [
+    "**/*.(t|j)s"
+  ],
   "moduleNameMapper": {
     "app/(.*)": "<rootDir>/../src/$1",
     "test/(.*)": "<rootDir>/../test/$1",
     "domain/(.*)": "<rootDir>/../domain/$1",
     "s3/aws-s3/(.*)": "<rootDir>/../libs/aws-s3/src/$1",
-    "s3/aws-s3": "<rootDir>/../libs/aws-s3/src"
+    "s3/aws-s3": "<rootDir>/../libs/aws-s3/src",
+    "judge/judge0/(.*)": "<rootDir>/../libs/judge0/src/$1",
+    "judge/judge0": "<rootDir>/../libs/judge0/src"
   }
 }
