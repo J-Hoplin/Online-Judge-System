@@ -6,7 +6,7 @@ export class Judge0Service {
   private instance: AxiosInstance;
   constructor() {
     this.instance = axios.create({
-      baseURL: process.env.JUDGE_API,
+      baseURL: process.env.JUDGE_SERVER_ENDPOINT,
     });
   }
 

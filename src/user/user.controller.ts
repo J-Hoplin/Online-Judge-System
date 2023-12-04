@@ -14,10 +14,10 @@ import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 import { UserDocs } from './user.docs';
 import { UserService } from './user.service';
 import { GetUser } from 'app/decorator';
-import { UserDomain } from 'domain/user.domain';
 import { Role } from 'app/decorator/role.decorator';
 import { RoleGuard } from 'app/guard';
 import { SetContributerDto } from './dto/set-contributor';
+import { UserDomain } from 'domains';
 
 @Controller('user')
 @UserDocs.Controller()

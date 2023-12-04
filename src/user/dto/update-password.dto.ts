@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { UserDomain } from 'domain/user.domain';
+import { UserDomain } from 'domains/user.domain';
 
 export class UpdatePasswordDto extends PickType(UserDomain, ['password']) {
   @IsString()

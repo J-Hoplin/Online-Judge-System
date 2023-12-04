@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CheckCredentialResponse } from './response/check-credential.response';
-import { UserDomain } from 'domain/user.domain';
+import { UserDomain } from 'domains';
 
 export class UserDocs {
   public static Controller() {

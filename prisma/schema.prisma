@@ -36,8 +36,8 @@ model Problem {
   id            Int    @id @default(autoincrement())
   title         String // 제목
   problem       String // 문제
-  input         String // 입력
-  output        String // 출력
+  input         String? // 입력
+  output        String? // 출력
   timeLimit     Int // 시간제한(Second)
   memoryLimit   Int // 메모리제한(MB)
   // 1:N relation with User

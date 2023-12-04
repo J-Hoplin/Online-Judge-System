@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { UserDomain } from 'domain/user.domain';
+import { UserDomain } from 'domains';
 
 export class UpdateUserInfoDto extends PickType(UserDomain, [
   'blog',
