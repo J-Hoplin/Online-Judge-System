@@ -13,11 +13,13 @@ export type PaginateObject = {
 export const PaginationDocs = [
   ApiQuery({
     name: 'page',
+    required: false,
     type: Number,
     description: 'Default is 1',
   }),
   ApiQuery({
     name: 'offset',
+    required: false,
     type: Number,
     description: 'Default is 10',
   }),

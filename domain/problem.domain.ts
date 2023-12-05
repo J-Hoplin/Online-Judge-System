@@ -11,14 +11,10 @@ export class ProblemDomain implements Problem {
   @ApiProperty()
   problem: string;
 
-  @ApiProperty({
-    required: false,
-  })
+  @ApiProperty()
   input: string;
 
-  @ApiProperty({
-    required: false,
-  })
+  @ApiProperty()
   output: string;
 
   @ApiProperty()
