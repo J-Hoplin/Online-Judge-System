@@ -9,8 +9,12 @@ import {
 } from '@nestjs/swagger';
 import { PaginationDocs } from 'app/decorator';
 import { ListProblemResponse } from './response/list-problem.response';
-import { CreateProblemResponse } from 'app/judge/contributer/response/create-problem.response';
-import { ReadProblemResponse } from 'app/judge/contributer/response';
+import { CreateUpdateProblemResponse } from 'app/judge/contributer/response/create-problem.response';
+import {
+  DeleteProblemExampleResponse,
+  ReadProblemResponse,
+} from 'app/judge/contributer/response';
+import { CreateUpdateProblemExampleResponse } from './response/create-example.response';
 
 export class ContributerDocs {
   public static Controller() {
@@ -51,7 +55,49 @@ export class ContributerDocs {
         summary: '문제 생성하기',
       }),
       ApiOkResponse({
-        type: CreateProblemResponse,
+        type: CreateUpdateProblemResponse,
+      }),
+    );
+  }
+
+  public static updateProblem() {
+    return applyDecorators(
+      ApiOperation({
+        summary: '문제 수정하기',
+      }),
+      ApiOkResponse({
+        type: CreateUpdateProblemResponse,
+      }),
+    );
+  }
+  public static createExample() {
+    return applyDecorators(
+      ApiOperation({
+        summary: '예제 생성하기',
+      }),
+      ApiOkResponse({
+        type: CreateUpdateProblemExampleResponse,
+      }),
+    );
+  }
+  public static updateExample() {
+    return applyDecorators(
+      ApiOperation({
+        summary: '예제 생성하기',
+      }),
+      ApiOkResponse({
+        type: CreateUpdateProblemExampleResponse,
+      }),
+    );
+  }
+
+  public static deleteExample() {
+    return applyDecorators(
+      ApiOperation({
+        summary: '예제 삭제하기',
+      }),
+      ApiOkResponse({
+        type: DeleteProblemExampleResponse,
       }),
     );
   }

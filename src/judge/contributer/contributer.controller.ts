@@ -1,19 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { LocalGuard } from 'app/auth/guard';
+import { GetUser, PaginateObject, Pagination } from 'app/decorator';
 import { Role } from 'app/decorator/role.decorator';
 import { RoleGuard } from 'app/guard';
-import { ContributerService } from './contributer.service';
-import { GetUser, PaginateObject, Pagination } from 'app/decorator';
+import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { ContributerDocs } from './contributer.docs';
-import { CreateProblmeDto } from 'app/judge/contributer/dto/create-problme.dto';
+import { ContributerService } from './contributer.service';
+import { UpdateExampleDto } from './dto';
 
 @Controller()
 @Role(['Admin', 'Contributer']) // Set Controller Level RBAC
@@ -44,7 +48,47 @@ export class ContributerController {
 
   @Post('problems')
   @ContributerDocs.createProblem()
-  createProblem(@GetUser('id') uid: string, @Body() dto: CreateProblmeDto) {
-    return this.contributerService.createProblem(uid, dto);
+  createProblem(@GetUser('id') uid: string) {
+    return this.contributerService.createProblem(uid);
+  }
+
+  @Patch('problems/:pid')
+  @ContributerDocs.updateProblem()
+  updateProblem(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Body() dto: UpdateProblmeDto,
+  ) {
+    return this.contributerService.updateProblem(uid, pid, dto);
+  }
+
+  @Post('problems/:pid/examples')
+  @ContributerDocs.createExample()
+  createExample(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+  ) {
+    return this.contributerService.createExmaple(uid, pid);
+  }
+
+  @Patch('problems/:pid/examples/:eid')
+  @ContributerDocs.updateExample()
+  updateExample(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('eid', ParseIntPipe) eid: number,
+    @Body() dto: UpdateExampleDto,
+  ) {
+    return this.contributerService.updateExample(uid, pid, eid, dto);
+  }
+
+  @Delete('problems/:pid/examples/:eid')
+  @ContributerDocs.deleteExample()
+  deleteExample(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('eid', ParseIntPipe) eid: number,
+  ) {
+    return this.contributerService.deleteExample(uid, pid, eid);
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Problem } from '@prisma/client';
+import { Prisma, Problem } from '@prisma/client';
 
 export class ProblemDomain implements Problem {
   @ApiProperty()
@@ -22,6 +22,12 @@ export class ProblemDomain implements Problem {
 
   @ApiProperty()
   memoryLimit: number;
+
+  @ApiProperty({
+    isArray: true,
+    example: ['sort', 'bfs', 'math'],
+  })
+  tags: string[];
 
   @ApiProperty()
   contributerId: string;

@@ -1,12 +1,8 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PaginateObject } from 'app/decorator';
+import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { PrismaService } from 'app/prisma/prisma.service';
-import { CreateProblmeDto } from 'app/judge/contributer/dto/create-problme.dto';
-import { ru } from '@faker-js/faker';
+import { UpdateExampleDto } from './dto';
 
 @Injectable()
 export class ContributerService {
@@ -34,6 +30,9 @@ export class ContributerService {
         id: pid,
         contributerId: uid,
       },
+      include: {
+        examples: true,
+      },
     });
     if (!problem) {
       throw new ForbiddenException('FORBIDDEN_REQUEST');
@@ -41,28 +40,102 @@ export class ContributerService {
     return problem;
   }
 
-  async createProblem(uid: string, dto: CreateProblmeDto) {
-    const problem = await this.prisma.problem.create({
+  async createProblem(uid: string) {
+    // Return new problem
+    return this.prisma.problem.create({
       data: {
-        title: dto.title,
-        problem: dto.problem,
-        input: dto.input,
-        output: dto.output,
-        timeLimit: dto.timeLimit,
-        memoryLimit: dto.memoryLimit,
+        title: 'New Problem',
         contributerId: uid,
-        examples: {
-          create: dto.examples.map((example) => {
-            return {
-              input: example.input,
-              output: example.output,
-              isPublic: example.isPublic,
-            };
-          }),
-        },
+        tags: [],
+      },
+    });
+  }
+
+  async updateProblem(uid: string, pid: number, dto: UpdateProblmeDto) {
+    const findProblem = await this.prisma.problem.findUnique({
+      where: {
+        id: pid,
+        contributerId: uid,
+      },
+    });
+
+    if (!findProblem) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
+
+    const problem = await this.prisma.problem.update({
+      where: {
+        id: pid,
+        contributerId: uid,
+      },
+      data: {
+        ...dto,
       },
       include: {
         examples: true,
+      },
+    });
+    return problem;
+  }
+
+  async createExmaple(uid: string, pid: number) {
+    return this.prisma.problemExample.create({
+      data: {
+        problemId: pid,
+      },
+    });
+  }
+
+  async updateExample(
+    uid: string,
+    pid: number,
+    eid: number,
+    dto: UpdateExampleDto,
+  ) {
+    const findExample = await this.prisma.problemExample.findUnique({
+      where: {
+        id: eid,
+        problemId: pid,
+        Problem: {
+          contributerId: uid,
+        },
+      },
+    });
+    if (!findExample) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
+    return this.prisma.problemExample.update({
+      where: {
+        id: eid,
+        problemId: pid,
+      },
+      data: {
+        ...dto,
+      },
+    });
+  }
+
+  async deleteExample(uid: string, pid: number, eid: number) {
+    const findExample = await this.prisma.problemExample.findUnique({
+      where: {
+        id: eid,
+        problemId: pid,
+        Problem: {
+          contributerId: uid,
+        },
+      },
+    });
+    if (!findExample) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
+    const problem = await this.prisma.problemExample.delete({
+      where: {
+        id: eid,
+        problemId: pid,
+      },
+      select: {
+        output: true,
+        input: true,
       },
     });
     return problem;

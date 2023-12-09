@@ -1,1 +1,2 @@
-export * from './create-problme.dto';
+export * from './update-problem.dto';
+export * from './update-example.dto';

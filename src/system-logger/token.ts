@@ -1,0 +1,2 @@
+export const SYSTEM_CONTEXT = 'SYSTEM_CONTEXT';
+export const SYSTEM_LOGGER = 'SYSTEM_LOGGER';
