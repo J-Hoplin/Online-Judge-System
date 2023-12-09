@@ -62,6 +62,14 @@ export class ContributerController {
     return this.contributerService.updateProblem(uid, pid, dto);
   }
 
+  @Delete('problems/:pid')
+  deleteProblem(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+  ) {
+    return this.contributerService.deleteProblem(uid, pid);
+  }
+
   @Post('problems/:pid/examples')
   @ContributerDocs.createExample()
   createExample(

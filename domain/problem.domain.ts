@@ -30,6 +30,12 @@ export class ProblemDomain implements Problem {
   tags: string[];
 
   @ApiProperty()
+  isArchived: boolean;
+
+  @ApiProperty()
+  deletedAt: Date;
+
+  @ApiProperty()
   contributerId: string;
 
   @ApiProperty()

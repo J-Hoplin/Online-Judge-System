@@ -78,6 +78,32 @@ export class ContributerService {
     return problem;
   }
 
+  async deleteProblem(uid: string, pid: number) {
+    const findProblem = await this.prisma.problem.findUnique({
+      where: {
+        id: pid,
+        contributerId: uid,
+      },
+    });
+    if (!findProblem) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
+    const updatedProblem = await this.prisma.problem.update({
+      where: {
+        id: pid,
+      },
+      data: {
+        isArchived: true,
+        deletedAt: new Date(),
+      },
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+    return updatedProblem;
+  }
+
   async createExmaple(uid: string, pid: number) {
     return this.prisma.problemExample.create({
       data: {

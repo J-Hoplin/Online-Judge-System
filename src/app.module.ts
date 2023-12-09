@@ -10,12 +10,12 @@ import { SystemLoggerModule } from './system-logger/system-logger.module';
 
 @Module({
   imports: [
+    SystemLoggerModule, // Should import before Prisma Module
     ConfigModule.forRoot(),
     AuthModule,
     PrismaModule,
     UserModule,
     JudgeModule,
-    SystemLoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

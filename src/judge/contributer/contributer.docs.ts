@@ -70,6 +70,18 @@ export class ContributerDocs {
       }),
     );
   }
+
+  public static deleteProblem() {
+    return applyDecorators(
+      ApiOperation({
+        summary: '문제 삭제하기',
+      }),
+      ApiOkResponse({
+        type: DeleteProblemExampleResponse,
+      }),
+    );
+  }
+
   public static createExample() {
     return applyDecorators(
       ApiOperation({

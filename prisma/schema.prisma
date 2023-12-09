@@ -48,7 +48,7 @@ model Problem {
   examples  ProblemExample[]
   tags      Json
 
-  isArchived Boolean
+  isArchived Boolean  @default(false)
   deletedAt  DateTime? 
 
   createdAt DateTime @default(now())

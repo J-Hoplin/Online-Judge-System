@@ -25,7 +25,6 @@ export class RoleGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
-    console.log(request.user);
     const user = request.user as UserDomain;
     return roleList.includes(user.type);
   }
