@@ -13,6 +13,8 @@ export class UpdateProblmeDto extends OmitType(ProblemDomain, [
   'contributerId',
   'createdAt',
   'updatedAt',
+  'isArchived',
+  'deletedAt',
 ]) {
   @IsString()
   @IsNotEmpty()

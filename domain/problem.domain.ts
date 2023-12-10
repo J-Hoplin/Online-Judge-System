@@ -27,7 +27,7 @@ export class ProblemDomain implements Problem {
     isArray: true,
     example: ['sort', 'bfs', 'math'],
   })
-  tags: string[];
+  tags: string[] | Prisma.JsonValue;
 
   @ApiProperty()
   isArchived: boolean;

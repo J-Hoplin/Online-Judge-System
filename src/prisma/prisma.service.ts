@@ -1,6 +1,5 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { SystemLoggerService } from 'app/system-logger/system-logger.service';
 
 @Injectable()
 export class PrismaService
@@ -23,7 +22,6 @@ export class PrismaService
 
   async onModuleInit() {
     await this.$connect();
-
     Object.assign(
       this,
       this.$extends({
@@ -81,6 +79,11 @@ export class PrismaService
   }
 
   async deleteAll() {
-    await this.$transaction([this.user.deleteMany()]);
+    // Consider order of delete by relation
+    await this.$transaction([
+      this.problemExample.deleteMany(),
+      this.problem.deleteMany(),
+      this.user.deleteMany(),
+    ]);
   }
 }
