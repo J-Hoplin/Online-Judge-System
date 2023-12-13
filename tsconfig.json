@@ -20,10 +20,12 @@
     "paths": {
       "app": ["src"],
       "app/*": ["src/*"],
-      "domain": ["domain"],
-      "domain/*": ["domain/*"],
+      "domains": ["domain"],
+      "domains/*": ["domain/*"],
       "s3/aws-s3": ["libs/aws-s3/src"],
-      "s3/aws-s3/*": ["libs/aws-s3/src/*"]
+      "s3/aws-s3/*": ["libs/aws-s3/src/*"],
+      "judge/judge0": ["libs/judge0/src"],
+      "judge/judge0/*": ["libs/judge0/src/*"]
     }
   }
 }

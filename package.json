@@ -33,6 +33,7 @@
     "@nestjs/swagger": "^7.1.16",
     "@prisma/client": "^5.6.0",
     "@types/multer": "^1.4.11",
+    "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

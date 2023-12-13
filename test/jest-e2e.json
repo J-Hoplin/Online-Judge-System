@@ -9,10 +9,13 @@
   "coverageDirectory": "../e2e-coverage",
   "collectCoverageFrom": ["**/*.(t|j)s"],
   "moduleNameMapper": {
+    "app": "<rootDir>/../src/$1",
     "app/(.*)": "<rootDir>/../src/$1",
+    "test": "<rootDir>/../test/$1",
     "test/(.*)": "<rootDir>/../test/$1",
-    "domain/(.*)": "<rootDir>/../domain/$1",
-    "s3/aws-s3/(.*)": "<rootDir>/../libs/aws-s3/src/$1",
-    "s3/aws-s3": "<rootDir>/../libs/aws-s3/src"
+    "domains": "<rootDir>/../domain/$1",
+    "domains/(.*)": "<rootDir>/../domain/$1",
+    "s3/aws-s3": "<rootDir>/../libs/aws-s3/src",
+    "s3/aws-s3/(.*)": "<rootDir>/../libs/aws-s3/src/$1"
   }
 }

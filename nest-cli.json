@@ -15,6 +15,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/aws-s3/tsconfig.lib.json"
       }
+    },
+    "judge0": {
+      "type": "library",
+      "root": "libs/judge0",
+      "entryFile": "index",
+      "sourceRoot": "libs/judge0/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/judge0/tsconfig.lib.json"
+      }
     }
   }
 }

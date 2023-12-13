@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -10,27 +11,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id       String @default(uuid()) @id
-  
-  nickname String @unique
-
-  password String
-
-  email    String @unique
-
-  message  String? 
-
-  github   String?
-  
-  blog     String?
-
-  type     UserType? @default(User)
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  nickname  String    @unique
+  password  String
+  email     String    @unique
+  message   String?
+  github    String?
+  blog      String?
+  type      UserType? @default(User)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  problems  Problem[]
 
   @@map("user")
 }
@@ -39,4 +31,41 @@ enum UserType {
   Admin
   Contributer
   User
+}
+
+model Problem {
+  id            Int    @id @default(autoincrement())
+  title         String @default("New Problem") // 제목
+  problem       String @default("Problem Here") // 문제
+  input         String @default("Input Here") // 입력
+  output        String @default("Output Here")// 출력
+  timeLimit     Int    @default(0)// 시간제한(Second)
+  memoryLimit   Int    @default(0)// 메모리제한(MB)
+  // 1:N relation with User
+  contributerId String
+  contributer   User   @relation(fields: [contributerId], references: [id])
+
+  examples  ProblemExample[]
+  tags      Json
+
+  isArchived Boolean  @default(false)
+  deletedAt  DateTime? 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("problem")
+}
+
+model ProblemExample {
+  id       Int     @id @default(autoincrement())
+  input    String  @default("")
+  output   String  @default("")
+  isPublic Boolean @default(true) // If it's public example
+
+  // 1:N relation with Problem
+  Problem   Problem? @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  problemId Int?
+
+  @@map("problem_example")
 }

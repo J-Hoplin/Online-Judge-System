@@ -3,14 +3,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from 'app/prisma/prisma.service';
-import { CheckCredentialDto, CredentialType, UpdatePasswordDto } from './dto';
 import { Prisma } from '@prisma/client';
-import { UpdateUserInfoDto } from './dto/update-user-info.dto';
-import { UserDomain } from 'domain/user.domain';
-import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaService } from 'app/prisma/prisma.service';
+import * as bcrypt from 'bcryptjs';
+import { UserDomain } from 'domains';
+import { CheckCredentialDto, CredentialType, UpdatePasswordDto } from './dto';
 import { SetContributerDto } from './dto/set-contributor';
+import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 
 @Injectable()
 export class UserService {

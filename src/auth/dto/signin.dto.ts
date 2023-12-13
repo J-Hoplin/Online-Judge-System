@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { UserDomain } from 'domain/user.domain';
+import { UserDomain } from 'domains';
 
 export class SigninDto extends PickType(UserDomain, ['email', 'password']) {
   @IsEmail()

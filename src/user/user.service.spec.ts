@@ -3,10 +3,10 @@ import { UserService } from './user.service';
 import { PrismaModule } from 'app/prisma/prisma.module';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { userSignupGen } from 'test/mock-generator';
-import { UserDomain } from 'domain/user.domain';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { CredentialType } from './dto';
 import * as bcrypt from 'bcryptjs';
+import { UserDomain } from 'domains';
 
 describe('UserService', () => {
   let service: UserService;

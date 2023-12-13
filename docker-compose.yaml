@@ -5,8 +5,8 @@ services:
     ports:
       - '3306:3306'
     restart: 'unless-stopped'
-    volumes:
-      - system-db:/var/lib/mysql
+    # volumes:
+    #   - system-db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=hoplin1234!
       - MYSQL_ROOT_HOST=%
@@ -14,6 +14,6 @@ services:
 networks:
   system:
     driver: bridge
-volumes:
-  system-db:
-    external: false
+# volumes:
+#   system-db:
+#     external: false
