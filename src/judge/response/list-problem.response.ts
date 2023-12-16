@@ -13,4 +13,13 @@ export class ListProblemResponse extends PickType(ProblemDomain, [
     type: ListProblemContributerResponse,
   })
   contributer: ListProblemContributerResponse;
+
+  @ApiProperty()
+  correct: number;
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  correctionRate: number;
 }

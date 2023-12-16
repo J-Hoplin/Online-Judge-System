@@ -122,7 +122,7 @@ export class ContributerService {
       where: {
         id: eid,
         problemId: pid,
-        Problem: {
+        problem: {
           contributerId: uid,
         },
       },
@@ -146,7 +146,7 @@ export class ContributerService {
       where: {
         id: eid,
         problemId: pid,
-        Problem: {
+        problem: {
           contributerId: uid,
         },
       },

@@ -24,8 +24,8 @@ export class JudgeService {
     return list;
   }
 
-  listProblem(filter: JudgeFilterObject, paginate: PaginateObject) {
-    return this.prisma.problem.findMany({
+  async listProblem(filter: JudgeFilterObject, paginate: PaginateObject) {
+    const problems = await this.prisma.problem.findMany({
       ...paginate,
       where: {
         ...filter.Where,
@@ -43,5 +43,41 @@ export class JudgeService {
         },
       },
     });
+
+    const filteredList = [];
+    for (const problem of problems) {
+      const submissionAggregate = await this.prisma.submission.groupBy({
+        by: ['isCorrect'],
+        where: {
+          problemId: problem.id,
+        },
+        _count: {
+          _all: true,
+        },
+      });
+      let correct = 0;
+      let total = 0;
+
+      submissionAggregate.forEach((aggregate) => {
+        total += aggregate._count._all;
+        switch (aggregate.isCorrect) {
+          case true:
+            correct += aggregate._count._all;
+            break;
+          case false:
+            break;
+        }
+      });
+
+      const correctionRate = (correct / total).toFixed(3);
+      filteredList.push({
+        ...problem,
+        correct,
+        total,
+        correctionRate,
+      });
+    }
+
+    return filteredList;
   }
 }
