@@ -8,13 +8,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDocs } from 'app/decorator';
-import { ListProblemResponse } from './response/list-problem.response';
-import { CreateUpdateProblemResponse } from 'app/judge/contributer/response/create-problem.response';
 import {
   DeleteProblemExampleResponse,
   ReadProblemResponse,
 } from 'app/judge/contributer/response';
+import { CreateUpdateProblemResponse } from 'app/judge/contributer/response/create-problem.response';
 import { CreateUpdateProblemExampleResponse } from './response/create-example.response';
+import { ListContributerProblemResponse } from './response/list-problem.response';
 
 export class ContributerDocs {
   public static Controller() {
@@ -31,7 +31,7 @@ export class ContributerDocs {
         description: '문제에 포함된 문자열 기준 검색',
       }),
       ...PaginationDocs,
-      ApiOkResponse({ type: ListProblemResponse, isArray: true }),
+      ApiOkResponse({ type: ListContributerProblemResponse, isArray: true }),
     );
   }
 

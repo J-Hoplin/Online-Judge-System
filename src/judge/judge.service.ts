@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
 import { GetLanguagesResponse } from './response/get-languages.response';
+import { PaginateObject } from 'app/decorator';
+import { JudgeFilterObject } from './judge-filter.decorator';
 
 @Injectable()
 export class JudgeService {
@@ -20,5 +22,26 @@ export class JudgeService {
       return 0;
     });
     return list;
+  }
+
+  listProblem(filter: JudgeFilterObject, paginate: PaginateObject) {
+    return this.prisma.problem.findMany({
+      ...paginate,
+      where: {
+        ...filter.Where,
+      },
+      orderBy: {
+        ...filter.Orderby,
+      },
+      select: {
+        id: true,
+        title: true,
+        contributer: {
+          select: {
+            nickname: true,
+          },
+        },
+      },
+    });
   }
 }

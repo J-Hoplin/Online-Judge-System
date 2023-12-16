@@ -1,3 +1,3 @@
 import { ProblemDomain } from 'domains';
 
-export class ListProblemResponse extends ProblemDomain {}
+export class ListContributerProblemResponse extends ProblemDomain {}

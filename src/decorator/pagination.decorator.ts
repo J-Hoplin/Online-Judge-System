@@ -28,9 +28,9 @@ export const PaginationDocs = [
 export const Pagination = createParamDecorator(
   (key: unknown, ctx: ExecutionContext): PaginateObject => {
     const request = ctx.switchToHttp().getRequest<Request>();
-    let page = parseInt(request['page']);
-    let offset = parseInt(request['offset']);
-
+    const query = request.query;
+    let page = parseInt(query['page'] as string);
+    let offset = parseInt(query['offset'] as string);
     // Validate Page
     page = page && page > 0 ? page : defaultPage;
     offset = offset && offset > 0 ? offset : defaultOffset;
