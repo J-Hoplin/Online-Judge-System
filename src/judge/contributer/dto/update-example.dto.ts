@@ -1,5 +1,5 @@
 import { OmitType } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
 import { ProblemExampleDomain } from 'domains';
 
 export class UpdateExampleDto extends OmitType(ProblemExampleDomain, [
@@ -7,14 +7,14 @@ export class UpdateExampleDto extends OmitType(ProblemExampleDomain, [
   'problemId',
 ]) {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   input: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   output: string;
 
   @IsBoolean()
-  @IsNotEmpty()
+  @IsOptional()
   isPublic: boolean;
 }
