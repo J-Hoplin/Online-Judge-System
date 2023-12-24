@@ -59,6 +59,16 @@ export class ContributerService {
       },
     });
 
+    // If time limit is lower than 0
+    if (dto?.timeLimit && dto.timeLimit < 0) {
+      dto.timeLimit = 5;
+    }
+
+    // If memory limit is lower than 0
+    if (dto?.memoryLimit && dto.memoryLimit < 0) {
+      dto.memoryLimit = 128;
+    }
+
     if (!findProblem) {
       throw new ForbiddenException('FORBIDDEN_REQUEST');
     }

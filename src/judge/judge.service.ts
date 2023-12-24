@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
 import { GetLanguagesResponse } from './response/get-languages.response';
 import { PaginateObject } from 'app/decorator';
 import { JudgeFilterObject } from './judge-filter.decorator';
+import { SubmitProblemDto } from './dto';
+import { Problem } from '@prisma/client';
 
 @Injectable()
 export class JudgeService {
@@ -79,5 +81,117 @@ export class JudgeService {
     }
 
     return filteredList;
+  }
+
+  async readProblem(pid: number) {
+    try {
+      const problem = await this.prisma.problem.findUniqueOrThrow({
+        where: {
+          id: pid,
+        },
+        include: {
+          examples: {
+            where: {
+              isPublic: true,
+            },
+          },
+        },
+      });
+      return problem;
+    } catch (err) {
+      throw new BadRequestException('PROBLEM_NOT_FOUND');
+    }
+  }
+
+  async submitProblem(uid: string, pid: number, dto: SubmitProblemDto) {
+    let problem: Problem;
+    // Find problem exist
+    try {
+      problem = await this.prisma.problem.findUniqueOrThrow({
+        where: {
+          id: pid,
+        },
+      });
+    } catch (err) {
+      throw new BadRequestException('PROBLEM_NOT_FOUND');
+    }
+    // Get examples from problem
+    const examples = await this.prisma.problemExample.findMany({
+      where: {
+        problemId: pid,
+      },
+    });
+    if (!examples.length) {
+      // If example not exist -> prevent submit
+      throw new BadRequestException('EXAMPLE_NOT_EXIST');
+    }
+
+    // Get all of the results
+    const results = await Promise.all(
+      examples.map((example) => {
+        return this.judge0.submit(
+          dto.languageId,
+          dto.code,
+          example.output,
+          example.input,
+          problem.timeLimit,
+          problem.memoryLimit,
+        );
+      }),
+    );
+
+    results.sort((x, y) => {
+      // Firstly sort by time
+      if (x.time > y.time) {
+        return 1;
+      }
+      if (x.time < y.time) {
+        return -1;
+      }
+
+      // If time is same, sort as memory
+      if (x.memory > y.memory) {
+        return 1;
+      }
+      if (x.memory < y.memory) {
+        return -1;
+      }
+    });
+
+    // Filter wrong answer
+    const checkWrongAnswer = results.filter((result) => !result.isCorrect);
+    checkWrongAnswer.sort((x, y) => {
+      // Firstly sort by time
+      if (x.time > y.time) {
+        return 1;
+      }
+      if (x.time < y.time) {
+        return -1;
+      }
+
+      // If time is same, sort as memory
+      if (x.memory > y.memory) {
+        return 1;
+      }
+      if (x.memory < y.memory) {
+        return -1;
+      }
+    });
+
+    const data = checkWrongAnswer.length ? checkWrongAnswer[0] : results[0];
+    return await this.prisma.submission.create({
+      data: {
+        code: dto.code,
+        codeLength: dto.code.length,
+        memory: data.memory,
+        time: data.time,
+        languageId: dto.languageId,
+        language: dto.language,
+        isCorrect: data.isCorrect,
+        response: data.description,
+        userId: uid,
+        problemId: pid,
+      },
+    });
   }
 }

@@ -24,6 +24,9 @@ export class SubmissionDomain implements Submission {
   language: string;
 
   @ApiProperty()
+  userId: string;
+
+  @ApiProperty()
   isCorrect: boolean;
 
   @ApiProperty({

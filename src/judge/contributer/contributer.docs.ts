@@ -10,7 +10,7 @@ import {
 import { PaginationDocs } from 'app/decorator';
 import {
   DeleteProblemExampleResponse,
-  ReadProblemResponse,
+  ReadContributerProblemResponse,
 } from 'app/judge/contributer/response';
 import { CreateUpdateProblemResponse } from 'app/judge/contributer/response/create-problem.response';
 import { CreateUpdateProblemExampleResponse } from './response/create-example.response';
@@ -41,7 +41,7 @@ export class ContributerDocs {
         summary: '단일 문제 조회',
       }),
       ApiOkResponse({
-        type: ReadProblemResponse,
+        type: ReadContributerProblemResponse,
       }),
       ApiForbiddenResponse({
         description: ['FORBIDDEN_REQUEST'].join(', '),

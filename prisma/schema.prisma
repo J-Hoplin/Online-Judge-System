@@ -40,8 +40,8 @@ model Problem {
   problem       String @default("Problem Here") // 문제
   input         String @default("Input Here") // 입력
   output        String @default("Output Here") // 출력
-  timeLimit     Int    @default(0) // 시간제한(Second)
-  memoryLimit   Int    @default(0) // 메모리제한(MB)
+  timeLimit     Int    @default(5) // 시간제한(Second)
+  memoryLimit   Int    @default(128) // 메모리제한(MB)
   // 1:N relation with User
   contributerId String
   contributer   User   @relation(fields: [contributerId], references: [id])
@@ -78,18 +78,23 @@ enum ResponseType {
   WRONG_ANSWER // 4
   TIME_LIMIT_EXCEED // 5
   COMPILE_ERROR // 6
-  MEMORY_LIMIT_EXCEED // If memory upper than limited memory
-  RUNTIME_ERROR // 7,8,9,10,11,12
+  RUNTIME_ERROR_SIGSEGV // 7
+  RUNTIME_ERROR_SIGXFSZ //8
+  RUNTIME_ERROR_SIGFPE // 9
+  RUNTIME_ERROR_SIGABRT // 10
+  RUNTIME_ERROR_NZEC //11
+  RUNTIME_ERROR // 12
   INTERNAL_ERROR // 13
   EXEC_FORMAT_ERROR // 14
+  MEMORY_LIMIT_EXCEED // 12
 }
 
 model Submission {
   id         Int          @id @default(autoincrement())
   code       String
   codeLength Int          @default(0)
-  memory     Int          @default(0) // KB
-  time       Int          @default(0) // ms
+  memory     Float        @default(0) // MB
+  time       Float        @default(0) // second
   languageId Int // Language ID
   language   String // Language Name
   isCorrect  Boolean
