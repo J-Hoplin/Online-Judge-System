@@ -4,7 +4,7 @@ import { Judge0Service } from 'judge/judge0';
 import { GetLanguagesResponse } from './response/get-languages.response';
 import { PaginateObject } from 'app/decorator';
 import { JudgeFilterObject } from './judge-filter.decorator';
-import { SubmitProblemDto } from './dto';
+import { RunProblemDto, SubmitProblemDto } from './dto';
 import { Problem } from '@prisma/client';
 
 @Injectable()
@@ -101,6 +101,56 @@ export class JudgeService {
     } catch (err) {
       throw new BadRequestException('PROBLEM_NOT_FOUND');
     }
+  }
+
+  async runProblem(pid: number, dto: RunProblemDto) {
+    let problem: Problem;
+    try {
+      problem = await this.prisma.problem.findUniqueOrThrow({
+        where: {
+          id: pid,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException('PROBLEM_NOT_FOUND');
+    }
+
+    // Get public examples from problem
+    const examples = await this.prisma.problemExample.findMany({
+      where: {
+        problemId: pid,
+        isPublic: true,
+      },
+    });
+
+    if (!examples.length) {
+      // If example not exist -> prevent submit
+      throw new BadRequestException('EXAMPLE_NOT_EXIST');
+    }
+
+    const results = await Promise.all(
+      examples.map((example) => {
+        return this.judge0.submit(
+          dto.languageId,
+          dto.code,
+          example.output,
+          example.input,
+          problem.timeLimit,
+          problem.memoryLimit,
+        );
+      }),
+    );
+
+    return results.map((result) => {
+      return {
+        isCorrect: result.isCorrect,
+        description: result.description,
+        stdout: result.output.stdout,
+        errorMessage: result.output.message,
+        expect: result.output.expect,
+      };
+    });
   }
 
   async submitProblem(uid: string, pid: number, dto: SubmitProblemDto) {

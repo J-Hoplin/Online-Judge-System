@@ -7,8 +7,12 @@ import { ResponseType } from '@prisma/client';
 export class Judge0Service {
   private instance: AxiosInstance;
   constructor() {
+    const judge0Endpoint = process.env.JUDGE_SERVER_ENDPOINT;
+    if (!judge0Endpoint) {
+      throw new Error('Judge Server Endpoint not found');
+    }
     this.instance = axios.create({
-      baseURL: process.env.JUDGE_SERVER_ENDPOINT,
+      baseURL: judge0Endpoint,
     });
   }
 

@@ -93,7 +93,7 @@ model Submission {
   id         Int          @id @default(autoincrement())
   code       String
   codeLength Int          @default(0)
-  memory     Float        @default(0) // MB
+  memory     Float        @default(0) // KB
   time       Float        @default(0) // second
   languageId Int // Language ID
   language   String // Language Name

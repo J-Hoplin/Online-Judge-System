@@ -9,7 +9,7 @@ import {
 import { GetLanguagesResponse } from './response/get-languages.response';
 import { ListProblemResponse } from './response/list-problem.response';
 import { ReadProblemResponse } from './response/read-problem.response';
-import { SubmitProblemResponse } from './response';
+import { RunProblemResponse, SubmitProblemResponse } from './response';
 
 export class JudgeDocs {
   public static Controller() {
@@ -36,6 +36,19 @@ export class JudgeDocs {
         type: ReadProblemResponse,
       }),
       ApiBadRequestResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
+    );
+  }
+
+  public static RunProblem() {
+    return applyDecorators(
+      ApiOperation({ summary: 'Public Example 실행' }),
+      ApiOkResponse({
+        type: RunProblemResponse,
+        isArray: true,
+      }),
+      ApiBadRequestResponse({
+        description: ['PROBLEM_NOT_FOUND', 'EXAMPLE_NOT_EXIST'].join(', '),
+      }),
     );
   }
 

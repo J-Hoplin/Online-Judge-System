@@ -12,7 +12,7 @@ import { GetUser, PaginateObject, Pagination } from 'app/decorator';
 import { JudgeFilter, JudgeFilterObject } from './judge-filter.decorator';
 import { JudgeDocs } from './judge.docs';
 import { JudgeService } from './judge.service';
-import { SubmitProblemDto } from './dto';
+import { RunProblemDto, SubmitProblemDto } from './dto';
 
 @Controller()
 @UseGuards(LocalGuard)
@@ -39,6 +39,15 @@ export class JudgeController {
   @JudgeDocs.ReadProblem()
   readProblem(@Param('pid', ParseIntPipe) pid: number) {
     return this.judgeService.readProblem(pid);
+  }
+
+  @Post('/:pid/run')
+  @JudgeDocs.RunProblem()
+  runProblem(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Body() dto: RunProblemDto,
+  ) {
+    return this.judgeService.runProblem(pid, dto);
   }
 
   @Post('/:pid/submit')
