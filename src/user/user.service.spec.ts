@@ -112,6 +112,7 @@ describe('UserService', () => {
         blog: 'jhoplin7259.tistory.com',
         nickname: 'nickname',
         github: 'J-hoplin1',
+        message: 'message',
         password: user3Singup.password,
       });
       expect(result).not.toBeUndefined();
@@ -123,6 +124,7 @@ describe('UserService', () => {
           blog: 'jhoplin7259.tistory.com',
           nickname: 'nickname2',
           github: 'J-hoplin1',
+          message: 'message',
           password: 'wrong-password',
         });
       } catch (err) {
