@@ -75,7 +75,7 @@ export class UserService {
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          throw new BadRequestException('CREDENTIAL_TAKEN');
+          throw new BadRequestException('NICKNAME_ALREADY_TAKEN');
         }
       }
       throw new BadRequestException(err.message);

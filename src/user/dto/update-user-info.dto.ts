@@ -7,6 +7,7 @@ export class UpdateUserInfoDto extends PickType(UserDomain, [
   'nickname',
   'github',
   'password',
+  'message',
 ]) {
   @IsString()
   @IsOptional()
@@ -19,6 +20,10 @@ export class UpdateUserInfoDto extends PickType(UserDomain, [
   @IsString()
   @IsOptional()
   github: string;
+
+  @IsString()
+  @IsOptional()
+  message: string;
 
   @IsString()
   @IsNotEmpty()
