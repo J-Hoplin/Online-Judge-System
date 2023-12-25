@@ -1,0 +1,1 @@
+node node_modules/prisma/build db push
