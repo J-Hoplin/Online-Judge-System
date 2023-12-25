@@ -1,5 +1,5 @@
-import { OmitType } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { ProblemExampleDomain } from 'domains';
 
 export class UpdateExampleDto extends OmitType(ProblemExampleDomain, [

@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UserDomain } from 'domains';
 
@@ -13,6 +13,9 @@ export class UpdateUserInfoDto extends PickType(UserDomain, [
   @IsOptional()
   blog: string;
 
+  @ApiProperty({
+    required: false,
+  })
   @IsString()
   @IsOptional()
   nickname: string;
