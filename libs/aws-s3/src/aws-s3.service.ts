@@ -33,10 +33,10 @@ export class AwsS3Service {
   constructor() {
     /** Initiate S3Client */
     this.s3Client = new S3Client({
-      region: process.env.AWS_S3_Region,
+      region: process.env.AWS_REGION,
       credentials: {
-        accessKeyId: process.env.AWS_S3_AccessKeyId,
-        secretAccessKey: process.env.AWS_S3_AccessKey,
+        accessKeyId: process.env.AWS_ACCESS_ID,
+        secretAccessKey: process.env.AWS_ACCESS_SECRET,
       },
     });
     this.s3Bucket = process.env.AWS_S3_BUCKET;

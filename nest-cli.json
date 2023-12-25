@@ -24,6 +24,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/judge0/tsconfig.lib.json"
       }
+    },
+    "aws-sqs": {
+      "type": "library",
+      "root": "libs/aws-sqs",
+      "entryFile": "index",
+      "sourceRoot": "libs/aws-sqs/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/aws-sqs/tsconfig.lib.json"
+      }
     }
   }
 }
