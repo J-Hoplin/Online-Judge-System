@@ -9,7 +9,7 @@ phases:
   pre_build:
     commands:
       - echo 'Install Node.js package dependencies'
-      - npm install
+      - npm install --force
   build:
     command:
       - echo 'Start building Nest.js Application'
