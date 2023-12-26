@@ -11,13 +11,12 @@ phases:
       - echo 'Install Node.js package dependencies'
       - npm install --force
   build:
-    command:
+    commands:
       - echo 'Start building Nest.js Application'
       - npm run build
   post_build:
     commands:
       - echo "Complete to build application!"
-      - pwd
       - ls -al dist
 artifacts:
   files:
