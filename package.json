@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
-    "start": "nest start",
+    "start": "node dist/main",
     "dev": "nest start --watch",
     "db:dev:up": "docker-compose up -d",
     "db:dev:down": "docker-compose down",
