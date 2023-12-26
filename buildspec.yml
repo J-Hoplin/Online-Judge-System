@@ -17,7 +17,8 @@ phases:
   post_build:
     commands:
       - echo "Complete to build application!"
-
+      - pwd
+      - ls -al dist
 artifacts:
   files:
     - '**/*'
