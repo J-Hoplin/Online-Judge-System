@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { SystemLoggerService } from './system-logger/system-logger.service';
 
 async function bootstrap() {
+  console.log('Test');
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalPipes(
