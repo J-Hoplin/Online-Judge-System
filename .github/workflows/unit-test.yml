@@ -36,5 +36,7 @@ jobs:
         run: npm install --force
       - name: Install dotenv-cli for dotenv cli
         run: npm install -g dotenv-cli
+      - name: Initialize Prisma Client
+        run: npm run ci:init
       - name: Run Unit Test
         run: npm run ci:unit
