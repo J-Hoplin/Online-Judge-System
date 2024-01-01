@@ -11,7 +11,7 @@ on:
       deploy_target:
         required: true
         type: string
-run-name: Deploy to branch ${{ github.ref_name }} by ${{ github.actor }}
+run-name: Unit test of ${{ github.ref_name }} by ${{ github.actor }}
 jobs:
   unit-testing:
     runs-on: ubuntu-latest
