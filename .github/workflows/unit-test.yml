@@ -1,5 +1,4 @@
 name: CI-Unit-Test
-run-name: Deploy to branch ${{ inputs.deploy_target }}
 on:
   workflow_call:
     inputs:
@@ -12,6 +11,7 @@ on:
   pull_request:
     branches:
       - dev
+run-name: Deploy to branch ${{ inputs.deploy_target }}
 jobs:
   unit-testing:
     runs-on: ubuntu-latest
