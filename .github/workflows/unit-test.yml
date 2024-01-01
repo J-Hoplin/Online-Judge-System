@@ -1,0 +1,40 @@
+name: CI-Unit-Test
+run-name: Deploy to branch ${{ inputs.deploy_target }}
+on:
+  workflow_call:
+    inputs:
+      build_id:
+        required: true
+        type: number
+      deploy_target:
+        required: true
+        type: string
+  push:
+    branches:
+      - dev
+jobs:
+  unit-testing:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout repository codes
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+      # Setup environment for Node.js 18
+      - name: Node.js version 18 Environment setting
+        uses: setup-node@v4
+        with:
+          node-version: 18
+      - name: Initialize .ci.env
+        run: |
+          touch .ci.env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .ci.env
+          echo "ADMIN_EMAIL=${{secrets.ADMIN_EMAIL}}" >> .ci.env
+          echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
+          echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
+          echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
+      - name: Install Node.js Dependencies
+        run: npm install
+      - name: Install dotenv-cli for dotenv cli
+        run: npm install -g dotenv-cli
+      - name: Run Unit Test
+        run: npm run ci:unit

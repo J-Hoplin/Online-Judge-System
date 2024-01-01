@@ -18,8 +18,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:unit": "jest --config ./test/jest-unit.json --runInBand"
+    "ci:unit": "dotenv -e .ci.env -- npx prisma db push &&  jest --setupFiles jest --config ./test/jest-unit.json --runInBand",
+    "ci:e2e": "dotenv -e .ci.env -- npx prisma db push && jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e": "dotenv -e .test.env -- npx prisma db push && jest --config ./test/jest-e2e.json --runInBand",
+    "test:unit": "dotenv -e .test.env -- npx prisma db push &&  jest --setupFiles jest --config ./test/jest-unit.json --runInBand"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.465.0",
@@ -38,6 +40,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "dotenv": "^16.3.1",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
