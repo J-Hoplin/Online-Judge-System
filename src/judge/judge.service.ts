@@ -6,6 +6,7 @@ import { PaginateObject } from 'app/decorator';
 import { JudgeFilterObject } from './judge-filter.decorator';
 import { RunProblemDto, SubmitProblemDto } from './dto';
 import { Problem } from '@prisma/client';
+import { SubmissionFilterObject } from './submission-filter.decorator';
 
 @Injectable()
 export class JudgeService {
@@ -243,5 +244,26 @@ export class JudgeService {
         problemId: pid,
       },
     });
+  }
+
+  async listUserSubmissions(
+    uid: string,
+    pid: number,
+    filter: SubmissionFilterObject,
+    pagination: PaginateObject,
+  ) {
+    // Take submission List
+    const submissionList = await this.prisma.submission.findMany({
+      skip: pagination.skip,
+      take: pagination.take,
+      orderBy: {
+        ...filter.Orderby,
+      },
+      where: {
+        ...filter.Where,
+        userId: uid,
+      },
+    });
+    return submissionList;
   }
 }

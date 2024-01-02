@@ -9,7 +9,12 @@ import {
 import { GetLanguagesResponse } from './response/get-languages.response';
 import { ListProblemResponse } from './response/list-problem.response';
 import { ReadProblemResponse } from './response/read-problem.response';
-import { RunProblemResponse, SubmitProblemResponse } from './response';
+import {
+  ListUserSubmissionRepsonse,
+  RunProblemResponse,
+  SubmitProblemResponse,
+} from './response';
+import { SubmissionFilterDocs } from './submission-filter.decorator';
 
 export class JudgeDocs {
   public static Controller() {
@@ -61,6 +66,14 @@ export class JudgeDocs {
       ApiBadRequestResponse({
         description: ['PROBLEM_NOT_FOUND', 'EXAMPLE_NOT_EXIST'].join(', '),
       }),
+    );
+  }
+
+  public static ListUserSubmission() {
+    return applyDecorators(
+      ApiOperation({ summary: '사용자 Submission 리스트' }),
+      ApiOkResponse({ type: ListUserSubmissionRepsonse, isArray: true }),
+      ...SubmissionFilterDocs,
     );
   }
 }

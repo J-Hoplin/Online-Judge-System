@@ -13,6 +13,10 @@ import { JudgeFilter, JudgeFilterObject } from './judge-filter.decorator';
 import { JudgeDocs } from './judge.docs';
 import { JudgeService } from './judge.service';
 import { RunProblemDto, SubmitProblemDto } from './dto';
+import {
+  SubmissionFilter,
+  SubmissionFilterObject,
+} from './submission-filter.decorator';
 
 @Controller()
 @UseGuards(LocalGuard)
@@ -50,7 +54,7 @@ export class JudgeController {
     return this.judgeService.runProblem(pid, dto);
   }
 
-  @Post('/:pid/submit')
+  @Post(['/:pid/submit', '/:pid/submission'])
   @JudgeDocs.SubmitProblem()
   submitProblem(
     @GetUser('id') uid: string,
@@ -58,5 +62,15 @@ export class JudgeController {
     @Body() dto: SubmitProblemDto,
   ) {
     return this.judgeService.submitProblem(uid, pid, dto);
+  }
+
+  @Get('/:pid/submission')
+  listUserSubmissions(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @SubmissionFilter() filter: SubmissionFilterObject,
+    @Pagination() pagination: PaginateObject,
+  ) {
+    return this.judgeService.listUserSubmissions(uid, pid, filter, pagination);
   }
 }
