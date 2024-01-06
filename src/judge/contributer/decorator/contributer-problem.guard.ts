@@ -2,6 +2,7 @@ import {
   BadRequestException,
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Inject,
   Injectable,
 } from '@nestjs/common';
@@ -9,30 +10,34 @@ import { PrismaService } from 'app/prisma/prisma.service';
 import { Request } from 'express';
 
 /**
- * Problem Id Checker
- * Only use for problem id required routers
+ * Contributer problem Id Checker
  *
- * Return 400 BadRequest Error if problem does not exist
+ * Assuem that user id already check from controller level Auth Guard
+ *
+ * Return 403 Forbidden Error if problem with contributer ID not found
  */
 
 @Injectable()
-export class ProblemGuard implements CanActivate {
+export class ContributerProblemGuard implements CanActivate {
   constructor(@Inject(PrismaService) private prisma: PrismaService) {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
+
+    // Get User info
+    const userId = request.user['id'];
+    // Get Problem Id
     const problemId = request.params['pid'];
 
-    // Check if problem in DB
     try {
       await this.prisma.problem.findUniqueOrThrow({
         where: {
           id: parseInt(problemId),
+          contributerId: userId,
         },
       });
       return true;
     } catch (err) {
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
     }
   }
 }

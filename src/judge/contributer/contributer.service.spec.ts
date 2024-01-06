@@ -77,38 +77,6 @@ describe('ContributerService', () => {
       expect(problem1.title).toBe('Title');
     });
 
-    it('should throw if problem ID does not exist', async () => {
-      try {
-        await service.updateProblem(user1.id, 10000, {
-          title: 'Title',
-          problem: 'Problem',
-          input: 'Input',
-          output: 'Output',
-          timeLimit: 10,
-          memoryLimit: 10,
-          tags: ['string'],
-        });
-      } catch (err) {
-        expect(err).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
-    it('should throw if other contributer tries to update', async () => {
-      try {
-        await service.updateProblem(user2.id, problem1.id, {
-          title: 'Title',
-          problem: 'Problem',
-          input: 'Input',
-          output: 'Output',
-          timeLimit: 10,
-          memoryLimit: 10,
-          tags: ['string'],
-        });
-      } catch (err) {
-        expect(err).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
     it('should update example', async () => {
       example1 = await service.updateExample(
         user1.id,
@@ -120,42 +88,6 @@ describe('ContributerService', () => {
           isPublic: true,
         },
       );
-    });
-
-    it('should throw if problem does not exist', async () => {
-      try {
-        await service.updateExample(user1.id, 999, example1.id, {
-          input: '2 3 4',
-          output: '5 6 7',
-          isPublic: true,
-        });
-      } catch (err) {
-        expect(err).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
-    it('should throw if example does not exist', async () => {
-      try {
-        await service.updateExample(user1.id, problem1.id, 100000, {
-          input: '2 3 4',
-          output: '5 6 7',
-          isPublic: true,
-        });
-      } catch (err) {
-        expect(err).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
-    it('should throw if other contributer tries to update example', async () => {
-      try {
-        await service.updateExample(user2.id, problem1.id, example1.id, {
-          input: '2 3 4',
-          output: '5 6 7',
-          isPublic: true,
-        });
-      } catch (err) {
-        expect(err).toBeInstanceOf(ForbiddenException);
-      }
     });
   });
 

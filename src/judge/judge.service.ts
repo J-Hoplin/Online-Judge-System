@@ -1,12 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { PaginateObject } from 'app/decorator';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
-import { GetLanguagesResponse } from './response/get-languages.response';
-import { PaginateObject } from 'app/decorator';
 import { JudgeFilterObject } from './decorator/judge-filter.decorator';
-import { RunProblemDto, SubmitProblemDto } from './dto';
-import { Problem } from '@prisma/client';
 import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
+import { RunProblemDto, SubmitProblemDto } from './dto';
+import { GetLanguagesResponse } from './response/get-languages.response';
 
 @Injectable()
 export class JudgeService {
@@ -85,23 +84,18 @@ export class JudgeService {
   }
 
   async readProblem(pid: number) {
-    try {
-      const problem = await this.prisma.problem.findUniqueOrThrow({
-        where: {
-          id: pid,
-        },
-        include: {
-          examples: {
-            where: {
-              isPublic: true,
-            },
+    return await this.prisma.problem.findUniqueOrThrow({
+      where: {
+        id: pid,
+      },
+      include: {
+        examples: {
+          where: {
+            isPublic: true,
           },
         },
-      });
-      return problem;
-    } catch (err) {
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
-    }
+      },
+    });
   }
 
   async runProblem(pid: number, dto: RunProblemDto) {

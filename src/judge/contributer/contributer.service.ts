@@ -25,7 +25,7 @@ export class ContributerService {
   }
 
   async readProblem(uid: string, pid: number) {
-    const problem = await this.prisma.problem.findUnique({
+    return await this.prisma.problem.findUnique({
       where: {
         id: pid,
         contributerId: uid,
@@ -34,10 +34,6 @@ export class ContributerService {
         examples: true,
       },
     });
-    if (!problem) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
-    }
-    return problem;
   }
 
   async createProblem(uid: string) {
@@ -69,10 +65,6 @@ export class ContributerService {
       dto.memoryLimit = 128;
     }
 
-    if (!findProblem) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
-    }
-
     const problem = await this.prisma.problem.update({
       where: {
         id: pid,
@@ -89,15 +81,6 @@ export class ContributerService {
   }
 
   async deleteProblem(uid: string, pid: number) {
-    const findProblem = await this.prisma.problem.findUnique({
-      where: {
-        id: pid,
-        contributerId: uid,
-      },
-    });
-    if (!findProblem) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
-    }
     const updatedProblem = await this.prisma.problem.update({
       where: {
         id: pid,
