@@ -14,7 +14,7 @@ import {
   RunProblemResponse,
   SubmitProblemResponse,
 } from './response';
-import { SubmissionFilterDocs } from './submission-filter.decorator';
+import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 
 export class JudgeDocs {
   public static Controller() {
