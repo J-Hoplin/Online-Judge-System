@@ -18,6 +18,7 @@ import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { ContributerDocs } from './contributer.docs';
 import { ContributerService } from './contributer.service';
 import { UpdateExampleDto } from './dto';
+import { ContributerProblemGuard } from './decorator/contributer-problem.guard';
 
 @Controller()
 @Role(['Admin', 'Contributer']) // Set Controller Level RBAC
@@ -38,6 +39,7 @@ export class ContributerController {
   }
 
   @Get('problems/:pid')
+  @UseGuards(ContributerProblemGuard)
   @ContributerDocs.readProblem()
   readProblem(
     @GetUser('id') uid: string,
@@ -53,6 +55,7 @@ export class ContributerController {
   }
 
   @Patch('problems/:pid')
+  @UseGuards(ContributerProblemGuard)
   @ContributerDocs.updateProblem()
   updateProblem(
     @GetUser('id') uid: string,
@@ -63,6 +66,8 @@ export class ContributerController {
   }
 
   @Delete('problems/:pid')
+  @UseGuards(ContributerProblemGuard)
+  @ContributerDocs.deleteProblem()
   deleteProblem(
     @GetUser('id') uid: string,
     @Param('pid', ParseIntPipe) pid: number,
@@ -71,6 +76,7 @@ export class ContributerController {
   }
 
   @Post('problems/:pid/examples')
+  @UseGuards(ContributerProblemGuard)
   @ContributerDocs.createExample()
   createExample(
     @GetUser('id') uid: string,
@@ -80,6 +86,7 @@ export class ContributerController {
   }
 
   @Patch('problems/:pid/examples/:eid')
+  @UseGuards(ContributerProblemGuard)
   @ContributerDocs.updateExample()
   updateExample(
     @GetUser('id') uid: string,
@@ -91,6 +98,7 @@ export class ContributerController {
   }
 
   @Delete('problems/:pid/examples/:eid')
+  @UseGuards(ContributerProblemGuard)
   @ContributerDocs.deleteExample()
   deleteExample(
     @GetUser('id') uid: string,

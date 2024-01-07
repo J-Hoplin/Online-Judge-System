@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { PaginateObject } from 'app/decorator';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
-import { GetLanguagesResponse } from './response/get-languages.response';
-import { PaginateObject } from 'app/decorator';
-import { JudgeFilterObject } from './judge-filter.decorator';
+import { JudgeFilterObject } from './decorator/judge-filter.decorator';
+import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
 import { RunProblemDto, SubmitProblemDto } from './dto';
-import { Problem } from '@prisma/client';
+import { GetLanguagesResponse } from './response/get-languages.response';
 
 @Injectable()
 export class JudgeService {
@@ -84,37 +84,26 @@ export class JudgeService {
   }
 
   async readProblem(pid: number) {
-    try {
-      const problem = await this.prisma.problem.findUniqueOrThrow({
-        where: {
-          id: pid,
-        },
-        include: {
-          examples: {
-            where: {
-              isPublic: true,
-            },
+    return await this.prisma.problem.findUniqueOrThrow({
+      where: {
+        id: pid,
+      },
+      include: {
+        examples: {
+          where: {
+            isPublic: true,
           },
         },
-      });
-      return problem;
-    } catch (err) {
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
-    }
+      },
+    });
   }
 
   async runProblem(pid: number, dto: RunProblemDto) {
-    let problem: Problem;
-    try {
-      problem = await this.prisma.problem.findUniqueOrThrow({
-        where: {
-          id: pid,
-        },
-      });
-    } catch (err) {
-      console.log(err);
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
-    }
+    const problem = await this.prisma.problem.findUniqueOrThrow({
+      where: {
+        id: pid,
+      },
+    });
 
     // Get public examples from problem
     const examples = await this.prisma.problemExample.findMany({
@@ -154,17 +143,12 @@ export class JudgeService {
   }
 
   async submitProblem(uid: string, pid: number, dto: SubmitProblemDto) {
-    let problem: Problem;
-    // Find problem exist
-    try {
-      problem = await this.prisma.problem.findUniqueOrThrow({
-        where: {
-          id: pid,
-        },
-      });
-    } catch (err) {
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
-    }
+    const problem = await this.prisma.problem.findUniqueOrThrow({
+      where: {
+        id: pid,
+      },
+    });
+
     // Get examples from problem
     const examples = await this.prisma.problemExample.findMany({
       where: {
@@ -243,5 +227,26 @@ export class JudgeService {
         problemId: pid,
       },
     });
+  }
+
+  async listUserSubmissions(
+    uid: string,
+    pid: number,
+    filter: SubmissionFilterObject,
+    pagination: PaginateObject,
+  ) {
+    // Take submission List
+    const submissionList = await this.prisma.submission.findMany({
+      skip: pagination.skip,
+      take: pagination.take,
+      orderBy: {
+        ...filter.Orderby,
+      },
+      where: {
+        ...filter.Where,
+        userId: uid,
+      },
+    });
+    return submissionList;
   }
 }

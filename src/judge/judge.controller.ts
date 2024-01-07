@@ -9,10 +9,18 @@ import {
 } from '@nestjs/common';
 import { LocalGuard } from 'app/auth/guard';
 import { GetUser, PaginateObject, Pagination } from 'app/decorator';
-import { JudgeFilter, JudgeFilterObject } from './judge-filter.decorator';
+import {
+  JudgeFilter,
+  JudgeFilterObject,
+} from './decorator/judge-filter.decorator';
 import { JudgeDocs } from './judge.docs';
 import { JudgeService } from './judge.service';
 import { RunProblemDto, SubmitProblemDto } from './dto';
+import {
+  SubmissionFilter,
+  SubmissionFilterObject,
+} from './decorator/submission-filter.decorator';
+import { ProblemGuard } from './decorator/problem.guard';
 
 @Controller()
 @UseGuards(LocalGuard)
@@ -42,6 +50,7 @@ export class JudgeController {
   }
 
   @Post('/:pid/run')
+  @UseGuards(ProblemGuard)
   @JudgeDocs.RunProblem()
   runProblem(
     @Param('pid', ParseIntPipe) pid: number,
@@ -50,7 +59,8 @@ export class JudgeController {
     return this.judgeService.runProblem(pid, dto);
   }
 
-  @Post('/:pid/submit')
+  @Post(['/:pid/submit', '/:pid/submission'])
+  @UseGuards(ProblemGuard)
   @JudgeDocs.SubmitProblem()
   submitProblem(
     @GetUser('id') uid: string,
@@ -58,5 +68,17 @@ export class JudgeController {
     @Body() dto: SubmitProblemDto,
   ) {
     return this.judgeService.submitProblem(uid, pid, dto);
+  }
+
+  @Get('/:pid/submission')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.ListUserSubmission()
+  listUserSubmissions(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @SubmissionFilter() filter: SubmissionFilterObject,
+    @Pagination() pagination: PaginateObject,
+  ) {
+    return this.judgeService.listUserSubmissions(uid, pid, filter, pagination);
   }
 }

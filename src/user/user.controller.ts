@@ -59,7 +59,7 @@ export class UserController {
     return this.userService.updatePassword(user, dto);
   }
 
-  @Patch('admin/role')
+  @Patch(['admin/role', 'role'])
   @Role(['Admin'])
   @UseGuards(RoleGuard)
   @UseGuards(LocalGuard)

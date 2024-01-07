@@ -36,4 +36,10 @@ export class SubmissionDomain implements Submission {
 
   @ApiProperty()
   problemId: number;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
 }
