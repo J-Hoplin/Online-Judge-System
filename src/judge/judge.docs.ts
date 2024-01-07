@@ -15,6 +15,7 @@ import {
   SubmitProblemResponse,
 } from './response';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
+import { PaginationDocs } from 'app/decorator';
 
 export class JudgeDocs {
   public static Controller() {
@@ -31,6 +32,7 @@ export class JudgeDocs {
     return applyDecorators(
       ApiOperation({ summary: '문제 리스트 출력' }),
       ApiOkResponse({ type: ListProblemResponse, isArray: true }),
+      ...PaginationDocs,
     );
   }
 
