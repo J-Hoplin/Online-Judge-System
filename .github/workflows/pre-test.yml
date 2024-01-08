@@ -41,17 +41,20 @@ jobs:
       - id: unit-test-phase
         name: Run Unit Test
         run: npm run ci:unit
-      - if: steps.unit-test-phase.outcome == 'success'
+      - name: 'Discord Alert - Success'
+        if: steps.unit-test-phase.outcome == 'success'
+        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
           details: 'Unit Test Result: Success'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - if: steps.unit-test-phase.outcome != 'success'
+      - name: 'Discord Alert - Failed'
+        if: steps.unit-test-phase.outcome != 'success'
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
-          details: 'Unit Test Result: Failed'
+          details: 'Unit Test Result: Fail'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   e2e-testing:
@@ -80,13 +83,16 @@ jobs:
       - id: e2e-test-phase
         name: Run E2E Test
         run: npm run ci:e2e
-      - if: steps.e2e-test-phase.outcome == 'success'
+      - name: 'Discord Alert - Success'
+        if: steps.e2e-test-phase.outcome == 'success'
+        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
           details: 'E2E Test Result: Success'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-      - if: steps.e2e-test-phase.outcome != 'success'
+      - name: 'Discord Alert - Fail'
+        if: steps.e2e-test-phase.outcome != 'success'
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
