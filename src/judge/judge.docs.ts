@@ -6,11 +6,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetLanguagesResponse } from './response/get-languages.response';
-import { ListProblemResponse } from './response/list-problem.response';
-import { ReadProblemResponse } from './response/read-problem.response';
+
 import {
+  GetLanguagesResponse,
+  ListProblemResponse,
   ListUserSubmissionRepsonse,
+  ReadProblemResponse,
   RunProblemResponse,
   SubmitProblemResponse,
 } from './response';

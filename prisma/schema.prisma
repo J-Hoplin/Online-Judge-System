@@ -12,16 +12,16 @@ datasource db {
 }
 
 model User {
-  id         String       @id @default(uuid())
-  nickname   String       @unique
+  id         String         @id @default(uuid())
+  nickname   String         @unique
   password   String
-  email      String       @unique
+  email      String         @unique
   message    String?
   github     String?
   blog       String?
-  type       UserType?    @default(User)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  type       UserType?      @default(User)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
   problems   Problem[]
   Submission Submission[]
   Issues     ProblemIssue[]
@@ -53,9 +53,9 @@ model Problem {
   tags     Json
 
   isArchived Boolean   @default(false)
-  deletedAt  DateTime?  
+  deletedAt  DateTime?
 
-  issues    ProblemIssue[]
+  issues ProblemIssue[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,10 +82,10 @@ enum ResponseType {
   TIME_LIMIT_EXCEED // 5
   COMPILE_ERROR // 6
   RUNTIME_ERROR_SIGSEGV // 7
-  RUNTIME_ERROR_SIGXFSZ //8
+  RUNTIME_ERROR_SIGXFSZ // 8
   RUNTIME_ERROR_SIGFPE // 9
   RUNTIME_ERROR_SIGABRT // 10
-  RUNTIME_ERROR_NZEC //11
+  RUNTIME_ERROR_NZEC // 11
   RUNTIME_ERROR // 12
   INTERNAL_ERROR // 13
   EXEC_FORMAT_ERROR // 14
@@ -98,6 +98,7 @@ model Submission {
   codeLength Int          @default(0)
   memory     Float        @default(0) // KB
   time       Float        @default(0) // second
+  isPublic   Boolean      @default(false)
   languageId Int // Language ID
   language   String // Language Name
   isCorrect  Boolean
@@ -117,17 +118,17 @@ model Submission {
 }
 
 model ProblemIssue {
-  id        Int     @id  @default(autoincrement())
-  title     String  @db.VarChar(100)
-  content   String  @db.Text
+  id      Int    @id @default(autoincrement())
+  title   String @db.VarChar(100)
+  content String @db.Text
 
   // 1:N relation with Problem
-  targetId  Int
-  target    Problem @relation(references: [id], fields: [targetId], onDelete: Cascade)
+  targetId Int
+  target   Problem @relation(references: [id], fields: [targetId], onDelete: Cascade)
 
   // 1:N relation with User
-  issuerId  String 
-  issuer    User    @relation(references: [id], fields: [issuerId],onDelete: Cascade)
+  issuerId String
+  issuer   User   @relation(references: [id], fields: [issuerId], onDelete: Cascade)
 
   @@map("problem_issue")
 }
