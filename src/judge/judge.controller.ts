@@ -85,12 +85,12 @@ export class JudgeController {
 
   @Get('/:pid/submissions/public')
   @UseGuards(ProblemGuard)
-  readPublicSubmission(
+  listPublicSubmission(
     @Param('pid', ParseIntPipe) pid: number,
     @SubmissionFilter() filter: SubmissionFilterObject,
     @Pagination() pagination: PaginateObject,
   ) {
-    return this.judgeService.readPublicSubmission(pid, filter, pagination);
+    return this.judgeService.listPublicSubmission(pid, filter, pagination);
   }
 
   @Get('/:pid/submissions/:sid')

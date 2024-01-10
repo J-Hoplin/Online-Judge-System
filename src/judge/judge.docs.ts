@@ -18,6 +18,7 @@ import {
 } from './response';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import { SubmissionDomain } from 'domains';
+import { PaginationDocs } from 'app/decorator';
 
 export class JudgeDocs {
   public static Controller() {
@@ -75,8 +76,18 @@ export class JudgeDocs {
   public static ListUserSubmission() {
     return applyDecorators(
       ApiOperation({ summary: '사용자 Submission 리스트' }),
-      ApiOkResponse({ type: ListUserSubmissionRepsonse, isArray: true }),
+      ApiOkResponse({ type: ListUserSubmissionRepsonse }),
       ...SubmissionFilterDocs,
+      ...PaginationDocs,
+    );
+  }
+
+  public static ListPublicSubmission() {
+    return applyDecorators(
+      ApiOperation({ summary: '공개된 Submission 리스트' }),
+      ApiOkResponse({ type: ListUserSubmissionRepsonse }),
+      ...SubmissionFilterDocs,
+      ...PaginationDocs,
     );
   }
 

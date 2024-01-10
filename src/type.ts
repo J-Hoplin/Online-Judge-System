@@ -6,6 +6,6 @@ export type JwtPayload = {
 // Common Prisma Enum type
 
 // Convert enum to interface(type)
-export type EnumFields<T extends string> = {
-  [key in T]: string;
+export type EnumFields<T extends string, K = any> = {
+  [key in T]: K;
 };

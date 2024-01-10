@@ -274,7 +274,7 @@ export class JudgeService {
     };
   }
 
-  async readPublicSubmission(
+  async listPublicSubmission(
     pid: number,
     filter: SubmissionFilterObject,
     pagination: PaginateObject,
