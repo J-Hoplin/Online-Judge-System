@@ -1,10 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { PaginateObject } from 'app/decorator';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
 import { JudgeFilterObject } from './decorator/judge-filter.decorator';
 import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
-import { RunProblemDto, SubmitProblemDto } from './dto';
+import { RunProblemDto, SubmitProblemDto, UpdateSubmissionDto } from './dto';
 import { GetLanguagesResponse } from './response/get-languages.response';
 
 @Injectable()
@@ -235,6 +239,22 @@ export class JudgeService {
     filter: SubmissionFilterObject,
     pagination: PaginateObject,
   ) {
+    const aggregate = await this.prisma.submission.groupBy({
+      by: ['response'],
+      _count: true,
+      where: {
+        userId: uid,
+        problemId: pid,
+      },
+    });
+    const aggregationMap = {
+      all: 0,
+    };
+    aggregate.map((group) => {
+      aggregationMap.all += group._count;
+      aggregationMap[group.response] = group._count;
+    });
+
     // Take submission List
     const submissionList = await this.prisma.submission.findMany({
       skip: pagination.skip,
@@ -245,8 +265,87 @@ export class JudgeService {
       where: {
         ...filter.Where,
         userId: uid,
+        problemId: pid,
       },
     });
-    return submissionList;
+    return {
+      aggregate: aggregationMap,
+      data: submissionList,
+    };
+  }
+
+  async readPublicSubmission(
+    pid: number,
+    filter: SubmissionFilterObject,
+    pagination: PaginateObject,
+  ) {
+    const aggregate = await this.prisma.submission.groupBy({
+      by: ['response'],
+      _count: true,
+      where: {
+        isPublic: true,
+        problemId: pid,
+      },
+    });
+    const aggregationMap = {
+      all: 0,
+    };
+    aggregate.map((group) => {
+      aggregationMap.all += group._count;
+      aggregationMap[group.response] = group._count;
+    });
+
+    const submissions = await this.prisma.submission.findMany({
+      skip: pagination.skip,
+      take: pagination.take,
+      orderBy: {
+        ...filter.Orderby,
+      },
+      where: {
+        ...filter.Where,
+        isPublic: true,
+        problemId: pid,
+      },
+    });
+    return {
+      aggreate: aggregationMap,
+      data: submissions,
+    };
+  }
+
+  async readUserSubmission(uid: string, pid: number, sid: number) {
+    try {
+      return await this.prisma.submission.findUniqueOrThrow({
+        where: {
+          id: sid,
+          problemId: pid,
+          userId: uid,
+        },
+      });
+    } catch (err) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
+  }
+
+  async updateUserSubmission(
+    uid: string,
+    pid: number,
+    sid: number,
+    dto: UpdateSubmissionDto,
+  ) {
+    try {
+      return await this.prisma.submission.update({
+        where: {
+          id: sid,
+          problemId: pid,
+          userId: uid,
+        },
+        data: {
+          ...dto,
+        },
+      });
+    } catch (err) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
   }
 }

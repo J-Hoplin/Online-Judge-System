@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -16,6 +17,7 @@ import {
   SubmitProblemResponse,
 } from './response';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
+import { SubmissionDomain } from 'domains';
 
 export class JudgeDocs {
   public static Controller() {
@@ -75,6 +77,24 @@ export class JudgeDocs {
       ApiOperation({ summary: '사용자 Submission 리스트' }),
       ApiOkResponse({ type: ListUserSubmissionRepsonse, isArray: true }),
       ...SubmissionFilterDocs,
+    );
+  }
+
+  public static ReadUserSubmission() {
+    return applyDecorators(
+      ApiOperation({ summary: '사용자 Submission 상세보기' }),
+      ApiOkResponse({ type: SubmissionDomain }),
+      ApiForbiddenResponse({
+        description: ['FORBIDDEN_REQUEST'].join(', '),
+      }),
+    );
+  }
+
+  public static UpdateUserSubmission() {
+    return applyDecorators(
+      ApiOperation({ summary: '사용자 Submission isPublic 변경' }),
+      ApiOkResponse({ type: SubmissionDomain }),
+      ApiForbiddenResponse({}),
     );
   }
 }

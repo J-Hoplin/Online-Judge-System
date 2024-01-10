@@ -18,6 +18,9 @@ export class SubmissionDomain implements Submission {
   time: number;
 
   @ApiProperty()
+  isPublic: boolean;
+
+  @ApiProperty()
   languageId: number;
 
   @ApiProperty()

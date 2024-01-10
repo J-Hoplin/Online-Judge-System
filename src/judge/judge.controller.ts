@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -15,7 +16,7 @@ import {
 } from './decorator/judge-filter.decorator';
 import { JudgeDocs } from './judge.docs';
 import { JudgeService } from './judge.service';
-import { RunProblemDto, SubmitProblemDto } from './dto';
+import { RunProblemDto, SubmitProblemDto, UpdateSubmissionDto } from './dto';
 import {
   SubmissionFilter,
   SubmissionFilterObject,
@@ -59,7 +60,7 @@ export class JudgeController {
     return this.judgeService.runProblem(pid, dto);
   }
 
-  @Post(['/:pid/submit', '/:pid/submission'])
+  @Post(['/:pid/submit', '/:pid/submissions'])
   @UseGuards(ProblemGuard)
   @JudgeDocs.SubmitProblem()
   submitProblem(
@@ -70,7 +71,7 @@ export class JudgeController {
     return this.judgeService.submitProblem(uid, pid, dto);
   }
 
-  @Get('/:pid/submission')
+  @Get('/:pid/submissions')
   @UseGuards(ProblemGuard)
   @JudgeDocs.ListUserSubmission()
   listUserSubmissions(
@@ -80,5 +81,38 @@ export class JudgeController {
     @Pagination() pagination: PaginateObject,
   ) {
     return this.judgeService.listUserSubmissions(uid, pid, filter, pagination);
+  }
+
+  @Get('/:pid/submissions/public')
+  @UseGuards(ProblemGuard)
+  readPublicSubmission(
+    @Param('pid', ParseIntPipe) pid: number,
+    @SubmissionFilter() filter: SubmissionFilterObject,
+    @Pagination() pagination: PaginateObject,
+  ) {
+    return this.judgeService.readPublicSubmission(pid, filter, pagination);
+  }
+
+  @Get('/:pid/submissions/:sid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.ReadUserSubmission()
+  readUserSubmission(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('sid', ParseIntPipe) sid: number,
+  ) {
+    return this.judgeService.readUserSubmission(uid, pid, sid);
+  }
+
+  @Patch('/:pid/submissions/:sid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.UpdateUserSubmission()
+  updateUserSubmission(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('sid', ParseIntPipe) sid: number,
+    @Body() dto: UpdateSubmissionDto,
+  ) {
+    return this.judgeService.updateUserSubmission(uid, pid, sid, dto);
   }
 }
