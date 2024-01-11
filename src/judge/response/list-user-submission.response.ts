@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { $Enums } from '@prisma/client';
 import { EnumFields } from 'app/type';
-import { SubmissionDomain } from 'domains';
+import { SubmissionDomain, UserDomain } from 'domains';
 
 export class ListUserSubmissionAggregate
   implements EnumFields<$Enums.ResponseType, number>
@@ -49,7 +49,18 @@ export class ListUserSubmissionAggregate
   MEMORY_LIMIT_EXCEED: number;
 }
 
-export class ListUserSubmissionData extends SubmissionDomain {}
+export class ListUserSubmissionUserData extends PickType(UserDomain, [
+  'id',
+  'nickname',
+  'email',
+]) {}
+
+export class ListUserSubmissionData extends SubmissionDomain {
+  @ApiProperty({
+    type: ListUserSubmissionUserData,
+  })
+  user: ListUserSubmissionUserData;
+}
 
 export class ListUserSubmissionRepsonse {
   @ApiProperty({

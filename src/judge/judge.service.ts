@@ -306,11 +306,44 @@ export class JudgeService {
         isPublic: true,
         problemId: pid,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+            email: true,
+          },
+        },
+      },
     });
     return {
       aggreate: aggregationMap,
       data: submissions,
     };
+  }
+
+  async readPublicSubmission(pid: number, sid: number) {
+    try {
+      const submission = await this.prisma.submission.findUniqueOrThrow({
+        where: {
+          id: sid,
+          problemId: pid,
+          isPublic: true,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+              email: true,
+            },
+          },
+        },
+      });
+      return submission;
+    } catch (err) {
+      throw new ForbiddenException('FORBIDDEN_REQUEST');
+    }
   }
 
   async readUserSubmission(uid: string, pid: number, sid: number) {

@@ -19,6 +19,7 @@ import {
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import { SubmissionDomain } from 'domains';
 import { PaginationDocs } from 'app/decorator';
+import { ReadPublicSubmissionResponse } from './response/read-public-submission.response';
 
 export class JudgeDocs {
   public static Controller() {
@@ -88,6 +89,14 @@ export class JudgeDocs {
       ApiOkResponse({ type: ListUserSubmissionRepsonse }),
       ...SubmissionFilterDocs,
       ...PaginationDocs,
+    );
+  }
+
+  public static ReadPublicSubmission() {
+    return applyDecorators(
+      ApiOperation({ summary: '공개된 Submission 상세보기' }),
+      ApiOkResponse({ type: ReadPublicSubmissionResponse }),
+      ApiForbiddenResponse({ description: ['FORBIDDEN_REQUEST'].join(', ') }),
     );
   }
 
