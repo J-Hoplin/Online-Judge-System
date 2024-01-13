@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -17,7 +18,12 @@ import {
 } from './decorator/judge-filter.decorator';
 import { JudgeDocs } from './judge.docs';
 import { JudgeService } from './judge.service';
-import { RunProblemDto, SubmitProblemDto, UpdateSubmissionDto } from './dto';
+import {
+  RunProblemDto,
+  SubmitProblemDto,
+  UpdateProblemIssueDto,
+  UpdateSubmissionDto,
+} from './dto';
 import {
   SubmissionFilter,
   SubmissionFilterObject,
@@ -46,6 +52,7 @@ export class JudgeController {
   }
 
   @Get('/:pid')
+  @UseGuards(ProblemGuard)
   @JudgeDocs.ReadProblem()
   readProblem(@Param('pid', ParseIntPipe) pid: number) {
     return this.judgeService.readProblem(pid);
@@ -128,5 +135,58 @@ export class JudgeController {
     @Body() dto: UpdateSubmissionDto,
   ) {
     return this.judgeService.updateUserSubmission(uid, pid, sid, dto);
+  }
+
+  @Get('/:pid/issues')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.ListProblemIssue()
+  listProblemIssue(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Pagination() paginate: PaginateObject,
+  ) {
+    return this.judgeService.listProblemIssue(pid, paginate);
+  }
+
+  @Get('/:pid/issues/:iid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.ReadProblemIssue()
+  readProblemIssue(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+  ) {
+    return this.judgeService.readProblemIssue(pid, iid);
+  }
+
+  @Post('/:pid/issues')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.CreateProblemIssue()
+  createProblemIssue(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+  ) {
+    return this.judgeService.createProblemIssue(uid, pid);
+  }
+
+  @Patch('/:pid/issues/:iid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.UpdateProblemIssue()
+  updateProblemIssue(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+    @Body() dto: UpdateProblemIssueDto,
+  ) {
+    return this.judgeService.updateProblemIssue(uid, pid, iid, dto);
+  }
+
+  @Delete('/:pid/issues/:iid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.DeleteProblemIssue()
+  deleteProblemExampleResponse(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+  ) {
+    return this.judgeService.deleteProblemIssue(uid, pid, iid);
   }
 }

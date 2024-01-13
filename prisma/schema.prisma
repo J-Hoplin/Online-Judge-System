@@ -25,6 +25,7 @@ model User {
   problems   Problem[]
   Submission Submission[]
   Issues     ProblemIssue[]
+  IssueComments ProblemIssueComment[]
 
   @@map("user")
 }
@@ -119,8 +120,8 @@ model Submission {
 
 model ProblemIssue {
   id      Int    @id @default(autoincrement())
-  title   String @db.VarChar(100)
-  content String @db.Text
+  title   String @db.VarChar(100) @default("Title Here")
+  content String @db.Text @default("Content Here")
   // 1:N relation with Problem
   targetId Int
   target   Problem @relation(references: [id], fields: [targetId], onDelete: Cascade)
@@ -139,6 +140,9 @@ model ProblemIssueComment {
 
   problemId Int
   problem   ProblemIssue @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  userId  String
+  user  User @relation(fields: [userId],references: [id],onDelete: Cascade,onUpdate: Cascade)
 
   @@map("problem_issue_comment")
 }

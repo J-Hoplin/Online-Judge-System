@@ -1,9 +1,9 @@
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Request } from 'express';
@@ -32,7 +32,10 @@ export class ProblemGuard implements CanActivate {
       });
       return true;
     } catch (err) {
-      throw new BadRequestException('PROBLEM_NOT_FOUND');
+      if (err.code === 'P2025') {
+        throw new NotFoundException('PROBLEM_NOT_FOUND');
+      }
+      throw err;
     }
   }
 }

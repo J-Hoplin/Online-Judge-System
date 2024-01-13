@@ -1,14 +1,19 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PaginateObject } from 'app/decorator';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
 import { JudgeFilterObject } from './decorator/judge-filter.decorator';
 import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
-import { RunProblemDto, SubmitProblemDto, UpdateSubmissionDto } from './dto';
+import {
+  RunProblemDto,
+  SubmitProblemDto,
+  UpdateProblemIssueDto,
+  UpdateSubmissionDto,
+} from './dto';
 import { GetLanguagesResponse } from './response/get-languages.response';
 
 @Injectable()
@@ -342,7 +347,12 @@ export class JudgeService {
       });
       return submission;
     } catch (err) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
+      // P2025 -> If find unique but not found
+      //https://www.prisma.io/docs/orm/prisma-migrate/getting-started#baseline-your-production-environment
+      if (err.code === 'P2025') {
+        throw new NotFoundException('SUBMISSION_NOT_FOUND');
+      }
+      throw err;
     }
   }
 
@@ -356,7 +366,10 @@ export class JudgeService {
         },
       });
     } catch (err) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
+      if (err.code === 'P2025') {
+        throw new NotFoundException('SUBMISSION_NOT_FOUND');
+      }
+      throw err;
     }
   }
 
@@ -378,7 +391,118 @@ export class JudgeService {
         },
       });
     } catch (err) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
+      if (err.code === 'P2025') {
+        throw new NotFoundException('SUBMISSION_NOT_FOUND');
+      }
+      throw err;
+    }
+  }
+
+  async listProblemIssue(pid: number, paginate: PaginateObject) {
+    return this.prisma.problemIssue.findMany({
+      ...paginate,
+      where: {
+        targetId: pid,
+      },
+      include: {
+        issuer: {
+          select: {
+            id: true,
+            nickname: true,
+          },
+        },
+        target: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    });
+  }
+
+  async readProblemIssue(pid: number, iid: number) {
+    try {
+      return this.prisma.problemIssue.findUniqueOrThrow({
+        where: {
+          id: iid,
+          targetId: pid,
+        },
+        include: {
+          issuer: {
+            select: {
+              id: true,
+              nickname: true,
+            },
+          },
+          target: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      });
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new NotFoundException('ISSUE_NOT_FOUND');
+      }
+      throw err;
+    }
+  }
+
+  async createProblemIssue(uid: string, pid: number) {
+    return this.prisma.problemIssue.create({
+      data: {
+        targetId: pid,
+        issuerId: uid,
+      },
+    });
+  }
+
+  async updateProblemIssue(
+    uid: string,
+    pid: number,
+    iid: number,
+    dto: UpdateProblemIssueDto,
+  ) {
+    try {
+      return this.prisma.problemIssue.update({
+        where: {
+          id: iid,
+          targetId: pid,
+          issuerId: uid,
+        },
+        data: {
+          ...dto,
+        },
+      });
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new NotFoundException('ISSUE_NOT_FOUND');
+      }
+      throw err;
+    }
+  }
+
+  async deleteProblemIssue(uid: string, pid: number, iid: number) {
+    try {
+      return this.prisma.problemIssue.delete({
+        where: {
+          id: iid,
+          targetId: pid,
+          issuerId: uid,
+        },
+        select: {
+          id: true,
+          title: true,
+        },
+      });
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new NotFoundException('ISSUE_NOT_FOUND');
+      }
+      throw err;
     }
   }
 }

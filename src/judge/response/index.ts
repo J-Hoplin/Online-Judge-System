@@ -7,3 +7,6 @@ export * from './list-user-submission.response';
 export * from './get-languages.response';
 export * from './list-problem.response';
 export * from './read-problem.response';
+export * from './delete-problem-issue.response';
+export * from './list-problem-issue.response';
+export * from './read-public-submission.response';
