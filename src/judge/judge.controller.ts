@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
   Patch,
@@ -51,6 +52,7 @@ export class JudgeController {
   }
 
   @Post('/:pid/run')
+  @HttpCode(200)
   @UseGuards(ProblemGuard)
   @JudgeDocs.RunProblem()
   runProblem(
@@ -61,6 +63,7 @@ export class JudgeController {
   }
 
   @Post(['/:pid/submit', '/:pid/submissions'])
+  @HttpCode(200)
   @UseGuards(ProblemGuard)
   @JudgeDocs.SubmitProblem()
   submitProblem(

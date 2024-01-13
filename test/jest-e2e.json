@@ -7,7 +7,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "coverageDirectory": "../e2e-coverage",
-  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "collectCoverageFrom": ["**/*\\.controller\\.(t|j)s", "**/*\\.dto\\.(t|j)s"],
   "moduleNameMapper": {
     "app/(.*)": "<rootDir>/../src/$1",
     "test/(.*)": "<rootDir>/../test/$1",

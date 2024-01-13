@@ -121,7 +121,6 @@ export class JudgeService {
       // If example not exist -> prevent submit
       throw new BadRequestException('EXAMPLE_NOT_EXIST');
     }
-
     const results = await Promise.all(
       examples.map((example) => {
         return this.judge0.submit(
@@ -225,6 +224,7 @@ export class JudgeService {
         time: data.time,
         languageId: dto.languageId,
         language: dto.language,
+        isPublic: dto.isPublic,
         isCorrect: data.isCorrect,
         response: data.description,
         userId: uid,
