@@ -43,7 +43,7 @@ export class ContributerController {
   @ContributerDocs.readProblem()
   readProblem(
     @GetUser('id') uid: string,
-    @Query('pid', ParseIntPipe) pid: number,
+    @Param('pid', ParseIntPipe) pid: number,
   ) {
     return this.contributerService.readProblem(uid, pid);
   }
