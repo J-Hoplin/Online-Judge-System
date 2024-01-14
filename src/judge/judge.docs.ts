@@ -130,8 +130,11 @@ export class JudgeDocs {
     return applyDecorators(
       ApiOperation({ summary: '사용자 Submission isPublic 변경' }),
       ApiOkResponse({ type: SubmissionDomain }),
+      ApiForbiddenResponse({
+        description: ['SUBMISSION_NOT_FOUND'].join(', '),
+      }),
       ApiNotFoundResponse({
-        description: ['PROBLEM_NOT_FOUND', 'SUBMISSION_NOT_FOUND'].join(', '),
+        description: ['PROBLEM_NOT_FOUND'].join(', '),
       }),
     );
   }
@@ -171,6 +174,9 @@ export class JudgeDocs {
     return applyDecorators(
       ApiOperation({ summary: 'Problem Issue 수정' }),
       ApiOkResponse({ type: ProblemIssueDomain }),
+      ApiForbiddenResponse({
+        description: ['ISSUE_NOT_FOUND'].join(', '),
+      }),
       ApiNotFoundResponse({
         description: ['PROBLEM_NOT_FOUND'].join(', '),
       }),
@@ -181,6 +187,9 @@ export class JudgeDocs {
     return applyDecorators(
       ApiOperation({ summary: 'Problem Issue 삭제' }),
       ApiOkResponse({ type: DeleteProblemIssueResponse }),
+      ApiForbiddenResponse({
+        description: ['ISSUE_NOT_FOUND'].join(', '),
+      }),
       ApiNotFoundResponse({
         description: ['PROBLEM_NOT_FOUND'].join(', '),
       }),
@@ -192,8 +201,9 @@ export class JudgeDocs {
       ApiOperation({ summary: 'Problem Issue Comment 생성' }),
       ApiOkResponse({ type: CreateProblemIssueCommentResponse }),
       ApiForbiddenResponse({
-        description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
+        description: ['ISSUE_NOT_FOUND'].join(', '),
       }),
+      ApiNotFoundResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
     );
   }
 
@@ -204,6 +214,7 @@ export class JudgeDocs {
       ApiForbiddenResponse({
         description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
       }),
+      ApiNotFoundResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
     );
   }
 
@@ -214,6 +225,7 @@ export class JudgeDocs {
       ApiForbiddenResponse({
         description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
       }),
+      ApiNotFoundResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
     );
   }
 }

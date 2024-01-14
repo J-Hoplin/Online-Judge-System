@@ -9,33 +9,33 @@ import { PrismaService } from 'app/prisma/prisma.service';
 import { Request } from 'express';
 
 /**
- * Problem Id Checker
- * Only use for problem id required routers ('pid')
+ * Problem Issue Id Checker
+ * Only use for problem issue id required routers ('iid')
  *
- * Return 404 NotFound Error if problem does not exist
+ * Return 404 NotFound Error if problem issue does not found
  */
 
 @Injectable()
-export class ProblemGuard implements CanActivate {
+export class ProblemIssueGuard implements CanActivate {
   constructor(@Inject(PrismaService) private prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const problemId = request.params['pid'];
+    const issueId = request.params['iid'];
 
-    // Check if problem in DB
     try {
-      await this.prisma.problem.findUniqueOrThrow({
+      await this.prisma.problemIssue.findUniqueOrThrow({
         where: {
-          id: parseInt(problemId),
+          id: parseInt(issueId),
         },
       });
       return true;
     } catch (err) {
       if (err.code === 'P2025') {
-        throw new NotFoundException('PROBLEM_NOT_FOUND');
+        throw new NotFoundException('ISSUE_NOT_FOUND');
       }
       throw err;
     }
+    return true;
   }
 }

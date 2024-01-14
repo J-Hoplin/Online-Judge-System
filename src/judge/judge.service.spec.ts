@@ -24,4 +24,10 @@ describe('JudgeService', () => {
   afterAll(async () => {
     await prisma.deleteAll();
   });
+
+  describe('Test', () => {
+    it('Test', () => {
+      expect(true);
+    });
+  });
 });

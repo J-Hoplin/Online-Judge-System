@@ -143,10 +143,10 @@ model ProblemIssueComment {
   issue   ProblemIssue @relation(fields: [issueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   userId  String
-  user  User @relation(fields: [userId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+  user  User @relation(fields: [userId],references: [id],onDelete: Cascade, onUpdate: Cascade)
 
   problemId Int
-  problem Problem @relation(references: [id],fields: [problemId],onDelete: Cascade)
+  problem Problem @relation(references: [id],fields: [problemId])
 
   @@map("problem_issue_comment")
 }

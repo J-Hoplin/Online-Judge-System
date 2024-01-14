@@ -19,9 +19,12 @@ import {
 import { GetLanguagesResponse } from './response/get-languages.response';
 
 /**
- * GET Request without unknown ID -> 404 Notfound
+ * Prisma 2025 -> Target entity not found
  *
- * POST,PATCH,PUT,DELETE without unknown ID -> 403 Forbidden
+ *
+ * Problem not found -> 404
+ * Problem comment, issue not found -> 403
+ * Problem exist but with wrong issue id or comment id -> 403
  */
 
 @Injectable()
@@ -407,7 +410,7 @@ export class JudgeService {
   }
 
   async listProblemIssue(pid: number, paginate: PaginateObject) {
-    return this.prisma.problemIssue.findMany({
+    return await this.prisma.problemIssue.findMany({
       ...paginate,
       where: {
         problemId: pid,
@@ -430,34 +433,27 @@ export class JudgeService {
   }
 
   async readProblemIssue(pid: number, iid: number) {
-    try {
-      return this.prisma.problemIssue.findUniqueOrThrow({
-        where: {
-          id: iid,
-          problemId: pid,
-        },
-        include: {
-          issuer: {
-            select: {
-              id: true,
-              nickname: true,
-            },
+    return await this.prisma.problemIssue.findUniqueOrThrow({
+      where: {
+        id: iid,
+        problemId: pid,
+      },
+      include: {
+        issuer: {
+          select: {
+            id: true,
+            nickname: true,
           },
-          problem: {
-            select: {
-              id: true,
-              title: true,
-            },
-          },
-          comments: true,
         },
-      });
-    } catch (err) {
-      if (err.code === 'P2025') {
-        throw new NotFoundException('ISSUE_NOT_FOUND');
-      }
-      throw err;
-    }
+        problem: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        comments: true,
+      },
+    });
   }
 
   async createProblemIssue(
@@ -465,7 +461,7 @@ export class JudgeService {
     uid: string,
     pid: number,
   ) {
-    return this.prisma.problemIssue.create({
+    return await this.prisma.problemIssue.create({
       data: {
         ...dto,
         problemId: pid,
@@ -481,7 +477,7 @@ export class JudgeService {
     dto: CreateProblemIssueDto,
   ) {
     try {
-      return this.prisma.problemIssue.update({
+      return await this.prisma.problemIssue.update({
         where: {
           id: iid,
           problemId: pid,
@@ -501,7 +497,7 @@ export class JudgeService {
 
   async deleteProblemIssue(uid: string, pid: number, iid: number) {
     try {
-      return this.prisma.problemIssue.delete({
+      return await this.prisma.problemIssue.delete({
         where: {
           id: iid,
           problemId: pid,
@@ -526,7 +522,20 @@ export class JudgeService {
     iid: number,
     dto: CreateProblemIssueCommentDto,
   ) {
-    return this.prisma.problemIssueComment.create({
+    try {
+      await this.prisma.problemIssue.findUniqueOrThrow({
+        where: {
+          id: iid,
+        },
+      });
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new ForbiddenException('ISSUE_NOT_FOUND');
+      }
+      throw err;
+    }
+    // Create new issue comment
+    return await this.prisma.problemIssueComment.create({
       data: {
         userId: uid,
         issueId: iid,
@@ -544,7 +553,7 @@ export class JudgeService {
     dto: CreateProblemIssueCommentDto,
   ) {
     try {
-      return this.prisma.problemIssueComment.update({
+      return await this.prisma.problemIssueComment.update({
         where: {
           id: cid,
           userId: uid,
@@ -556,7 +565,10 @@ export class JudgeService {
         },
       });
     } catch (err) {
-      throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
+      if (err.code === 'P2025') {
+        throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
+      }
+      throw err;
     }
   }
 
@@ -567,7 +579,7 @@ export class JudgeService {
     cid: number,
   ) {
     try {
-      return this.prisma.problemIssueComment.delete({
+      return await this.prisma.problemIssueComment.delete({
         where: {
           id: cid,
           userId: uid,
@@ -580,7 +592,10 @@ export class JudgeService {
         },
       });
     } catch (err) {
-      throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
+      if (err.code === 'P2025') {
+        throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
+      }
+      throw err;
     }
   }
 }

@@ -16,20 +16,20 @@ import {
   JudgeFilter,
   JudgeFilterObject,
 } from './decorator/judge-filter.decorator';
-import { JudgeDocs } from './judge.docs';
-import { JudgeService } from './judge.service';
-import {
-  RunProblemDto,
-  SubmitProblemDto,
-  CreateProblemIssueDto,
-  UpdateSubmissionDto,
-  CreateProblemIssueCommentDto,
-} from './dto';
+import { ProblemGuard } from './decorator/problem.guard';
 import {
   SubmissionFilter,
   SubmissionFilterObject,
 } from './decorator/submission-filter.decorator';
-import { ProblemGuard } from './decorator/problem.guard';
+import {
+  CreateProblemIssueCommentDto,
+  CreateProblemIssueDto,
+  RunProblemDto,
+  SubmitProblemDto,
+  UpdateSubmissionDto,
+} from './dto';
+import { JudgeDocs } from './judge.docs';
+import { JudgeService } from './judge.service';
 
 @Controller()
 @UseGuards(LocalGuard)
@@ -159,6 +159,7 @@ export class JudgeController {
   }
 
   @Post('/:pid/issues')
+  @HttpCode(200)
   @UseGuards(ProblemGuard)
   @JudgeDocs.CreateProblemIssue()
   createProblemIssue(
@@ -193,6 +194,7 @@ export class JudgeController {
   }
 
   @Post('/:pid/issues/:iid/comments')
+  @HttpCode(200)
   @UseGuards(ProblemGuard)
   @JudgeDocs.CreateProblemIssueComment()
   createProblemIssueComment(
