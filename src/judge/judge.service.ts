@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,12 +10,19 @@ import { Judge0Service } from 'judge/judge0';
 import { JudgeFilterObject } from './decorator/judge-filter.decorator';
 import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
 import {
+  CreateProblemIssueCommentDto,
+  CreateProblemIssueDto,
   RunProblemDto,
   SubmitProblemDto,
-  UpdateProblemIssueDto,
   UpdateSubmissionDto,
 } from './dto';
 import { GetLanguagesResponse } from './response/get-languages.response';
+
+/**
+ * GET Request without unknown ID -> 404 Notfound
+ *
+ * POST,PATCH,PUT,DELETE without unknown ID -> 403 Forbidden
+ */
 
 @Injectable()
 export class JudgeService {
@@ -392,7 +400,7 @@ export class JudgeService {
       });
     } catch (err) {
       if (err.code === 'P2025') {
-        throw new NotFoundException('SUBMISSION_NOT_FOUND');
+        throw new ForbiddenException('SUBMISSION_NOT_FOUND');
       }
       throw err;
     }
@@ -402,7 +410,7 @@ export class JudgeService {
     return this.prisma.problemIssue.findMany({
       ...paginate,
       where: {
-        targetId: pid,
+        problemId: pid,
       },
       include: {
         issuer: {
@@ -411,7 +419,7 @@ export class JudgeService {
             nickname: true,
           },
         },
-        target: {
+        problem: {
           select: {
             id: true,
             title: true,
@@ -426,7 +434,7 @@ export class JudgeService {
       return this.prisma.problemIssue.findUniqueOrThrow({
         where: {
           id: iid,
-          targetId: pid,
+          problemId: pid,
         },
         include: {
           issuer: {
@@ -435,12 +443,13 @@ export class JudgeService {
               nickname: true,
             },
           },
-          target: {
+          problem: {
             select: {
               id: true,
               title: true,
             },
           },
+          comments: true,
         },
       });
     } catch (err) {
@@ -451,10 +460,15 @@ export class JudgeService {
     }
   }
 
-  async createProblemIssue(uid: string, pid: number) {
+  async createProblemIssue(
+    dto: CreateProblemIssueDto,
+    uid: string,
+    pid: number,
+  ) {
     return this.prisma.problemIssue.create({
       data: {
-        targetId: pid,
+        ...dto,
+        problemId: pid,
         issuerId: uid,
       },
     });
@@ -464,13 +478,13 @@ export class JudgeService {
     uid: string,
     pid: number,
     iid: number,
-    dto: UpdateProblemIssueDto,
+    dto: CreateProblemIssueDto,
   ) {
     try {
       return this.prisma.problemIssue.update({
         where: {
           id: iid,
-          targetId: pid,
+          problemId: pid,
           issuerId: uid,
         },
         data: {
@@ -479,7 +493,7 @@ export class JudgeService {
       });
     } catch (err) {
       if (err.code === 'P2025') {
-        throw new NotFoundException('ISSUE_NOT_FOUND');
+        throw new ForbiddenException('ISSUE_NOT_FOUND');
       }
       throw err;
     }
@@ -490,7 +504,7 @@ export class JudgeService {
       return this.prisma.problemIssue.delete({
         where: {
           id: iid,
-          targetId: pid,
+          problemId: pid,
           issuerId: uid,
         },
         select: {
@@ -500,9 +514,73 @@ export class JudgeService {
       });
     } catch (err) {
       if (err.code === 'P2025') {
-        throw new NotFoundException('ISSUE_NOT_FOUND');
+        throw new ForbiddenException('ISSUE_NOT_FOUND');
       }
       throw err;
+    }
+  }
+
+  async createProblemIssueComment(
+    uid: string,
+    pid: number,
+    iid: number,
+    dto: CreateProblemIssueCommentDto,
+  ) {
+    return this.prisma.problemIssueComment.create({
+      data: {
+        userId: uid,
+        issueId: iid,
+        problemId: pid,
+        content: dto.content,
+      },
+    });
+  }
+
+  async updateProblemIssueComment(
+    uid: string,
+    pid: number,
+    iid: number,
+    cid: number,
+    dto: CreateProblemIssueCommentDto,
+  ) {
+    try {
+      return this.prisma.problemIssueComment.update({
+        where: {
+          id: cid,
+          userId: uid,
+          problemId: pid,
+          issueId: iid,
+        },
+        data: {
+          content: dto.content,
+        },
+      });
+    } catch (err) {
+      throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
+    }
+  }
+
+  async deleteProblemIssueComment(
+    uid: string,
+    pid: number,
+    iid: number,
+    cid: number,
+  ) {
+    try {
+      return this.prisma.problemIssueComment.delete({
+        where: {
+          id: cid,
+          userId: uid,
+          problemId: pid,
+          issueId: iid,
+        },
+        select: {
+          id: true,
+          content: true,
+        },
+      });
+    } catch (err) {
+      throw new ForbiddenException('ISSUE_COMMENT_NOT_FOUND');
     }
   }
 }

@@ -1,11 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from 'app/app.module';
+import { PrismaService } from 'app/prisma/prisma.service';
 import * as request from 'supertest';
 import { userSignupGen } from 'test/mock-generator';
 
 describe('/auth Auth Controller', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   // Mock user
   const user1 = userSignupGen();
@@ -16,10 +18,13 @@ describe('/auth Auth Controller', () => {
     }).compile();
 
     app = testModule.createNestApplication();
+    prisma = testModule.get<PrismaService>(PrismaService);
+
     await app.init();
   });
 
   afterAll(async () => {
+    await prisma.deleteAll();
     await app.close();
   });
 

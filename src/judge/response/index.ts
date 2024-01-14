@@ -10,3 +10,5 @@ export * from './read-problem.response';
 export * from './delete-problem-issue.response';
 export * from './list-problem-issue.response';
 export * from './read-public-submission.response';
+export * from './create-problem-issue-comment.response';
+export * from './delete-problem-issue-comment.response';

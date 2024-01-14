@@ -1,12 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { InitializeAdmin } from 'app/admin-init';
 import { AppModule } from 'app/app.module';
+import { PrismaService } from 'app/prisma/prisma.service';
 import * as request from 'supertest';
 import { userSignupGen } from 'test/mock-generator';
 import { BearerTokenHeader } from 'test/test-utils';
 
 describe('/judge Judge Controller', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   // Mock User
   const user1 = userSignupGen();
@@ -24,10 +27,14 @@ describe('/judge Judge Controller', () => {
     }).compile();
 
     app = testModule.createNestApplication();
+    prisma = testModule.get<PrismaService>(PrismaService);
+
+    await InitializeAdmin(app);
     await app.init();
   });
 
   afterAll(async () => {
+    await prisma.deleteAll();
     await app.close();
   });
 
@@ -203,7 +210,7 @@ describe('/judge Judge Controller', () => {
       return request(app.getHttpServer())
         .get(`/judge/${problemId}/submissions/${submissionId}`)
         .set('Authorization', BearerTokenHeader(user2Token))
-        .expect(403);
+        .expect(404);
     });
 
     it('should read submission', async () => {
@@ -283,7 +290,7 @@ describe('/judge Judge Controller', () => {
       return request(app.getHttpServer())
         .get(`/judge/${problemId}/submissions/public/${submissionId}`)
         .set('Authorization', BearerTokenHeader(user2Token))
-        .expect(403);
+        .expect(404);
     });
   });
 });

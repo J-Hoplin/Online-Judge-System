@@ -57,6 +57,7 @@ model Problem {
   deletedAt  DateTime?
 
   issues ProblemIssue[]
+  comments ProblemIssueComment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -121,10 +122,10 @@ model Submission {
 model ProblemIssue {
   id      Int    @id @default(autoincrement())
   title   String @db.VarChar(100) @default("Title Here")
-  content String @db.Text @default("Content Here")
+  content String @db.Text
   // 1:N relation with Problem
-  targetId Int
-  target   Problem @relation(references: [id], fields: [targetId], onDelete: Cascade)
+  problemId Int
+  problem   Problem @relation(references: [id], fields: [problemId], onDelete: Cascade)
   // 1:N relation with User
   issuerId String
   issuer   User   @relation(references: [id], fields: [issuerId], onDelete: Cascade)
@@ -138,11 +139,14 @@ model ProblemIssueComment {
   id  Int @id  @default(autoincrement())
   content String @db.Text
 
-  problemId Int
-  problem   ProblemIssue @relation(fields: [problemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  issueId Int
+  issue   ProblemIssue @relation(fields: [issueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   userId  String
   user  User @relation(fields: [userId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+
+  problemId Int
+  problem Problem @relation(references: [id],fields: [problemId],onDelete: Cascade)
 
   @@map("problem_issue_comment")
 }

@@ -12,7 +12,7 @@ import { Request } from 'express';
  * Problem Id Checker
  * Only use for problem id required routers
  *
- * Return 400 BadRequest Error if problem does not exist
+ * Return 404 NotFound Error if problem does not exist
  */
 
 @Injectable()

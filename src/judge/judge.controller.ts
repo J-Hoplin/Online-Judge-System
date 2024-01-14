@@ -21,8 +21,9 @@ import { JudgeService } from './judge.service';
 import {
   RunProblemDto,
   SubmitProblemDto,
-  UpdateProblemIssueDto,
+  CreateProblemIssueDto,
   UpdateSubmissionDto,
+  CreateProblemIssueCommentDto,
 } from './dto';
 import {
   SubmissionFilter,
@@ -163,8 +164,9 @@ export class JudgeController {
   createProblemIssue(
     @GetUser('id') uid: string,
     @Param('pid', ParseIntPipe) pid: number,
+    @Body() dto: CreateProblemIssueDto,
   ) {
-    return this.judgeService.createProblemIssue(uid, pid);
+    return this.judgeService.createProblemIssue(dto, uid, pid);
   }
 
   @Patch('/:pid/issues/:iid')
@@ -174,7 +176,7 @@ export class JudgeController {
     @GetUser('id') uid: string,
     @Param('pid', ParseIntPipe) pid: number,
     @Param('iid', ParseIntPipe) iid: number,
-    @Body() dto: UpdateProblemIssueDto,
+    @Body() dto: CreateProblemIssueDto,
   ) {
     return this.judgeService.updateProblemIssue(uid, pid, iid, dto);
   }
@@ -182,11 +184,48 @@ export class JudgeController {
   @Delete('/:pid/issues/:iid')
   @UseGuards(ProblemGuard)
   @JudgeDocs.DeleteProblemIssue()
-  deleteProblemExampleResponse(
+  deleteProblemIssue(
     @GetUser('id') uid: string,
     @Param('pid', ParseIntPipe) pid: number,
     @Param('iid', ParseIntPipe) iid: number,
   ) {
     return this.judgeService.deleteProblemIssue(uid, pid, iid);
+  }
+
+  @Post('/:pid/issues/:iid/comments')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.CreateProblemIssueComment()
+  createProblemIssueComment(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+    @Body() dto: CreateProblemIssueCommentDto,
+  ) {
+    return this.judgeService.createProblemIssueComment(uid, pid, iid, dto);
+  }
+
+  @Patch('/:pid/issues/:iid/comments/:cid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.UpdateProblemIssueComment()
+  updateProblmeIssueComment(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+    @Param('cid', ParseIntPipe) cid: number,
+    @Body() dto: CreateProblemIssueCommentDto,
+  ) {
+    return this.judgeService.updateProblemIssueComment(uid, pid, iid, cid, dto);
+  }
+
+  @Delete('/:pid/issues/:iid/comments/:cid')
+  @UseGuards(ProblemGuard)
+  @JudgeDocs.DeleteProblemIssueComment()
+  deleteProblemIssueComment(
+    @GetUser('id') uid: string,
+    @Param('pid', ParseIntPipe) pid: number,
+    @Param('iid', ParseIntPipe) iid: number,
+    @Param('cid', ParseIntPipe) cid: number,
+  ) {
+    return this.judgeService.deleteProblemIssueComment(uid, pid, iid, cid);
   }
 }

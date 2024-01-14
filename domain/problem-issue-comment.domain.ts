@@ -9,6 +9,9 @@ export class ProblemIssueCommentDomain implements ProblemIssueComment {
   content: string;
 
   @ApiProperty()
+  issueId: number;
+
+  @ApiProperty()
   problemId: number;
 
   @ApiProperty()

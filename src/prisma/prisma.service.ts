@@ -84,6 +84,8 @@ export class PrismaService
       this.problemExample.deleteMany(),
       this.problem.deleteMany(),
       this.user.deleteMany(),
+      this.problemIssue.deleteMany(),
+      this.problemIssueComment.deleteMany(),
     ]);
   }
 }

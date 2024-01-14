@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -12,6 +13,8 @@ import { PaginationDocs } from 'app/decorator';
 import { ProblemIssueDomain, SubmissionDomain } from 'domains';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import {
+  CreateProblemIssueCommentResponse,
+  DeleteProblemIssueCommentResponse,
   DeleteProblemIssueResponse,
   GetLanguagesResponse,
   ListProblemIssueResponse,
@@ -22,6 +25,7 @@ import {
   RunProblemResponse,
   SubmitProblemResponse,
 } from './response';
+import { ReadProblemIssueResponse } from './response/read-problem-issue.response';
 
 export class JudgeDocs {
   public static Controller() {
@@ -146,7 +150,7 @@ export class JudgeDocs {
   public static ReadProblemIssue() {
     return applyDecorators(
       ApiOperation({ summary: 'Problem의 Issue 조회' }),
-      ApiOkResponse({ type: ListProblemIssueResponse }),
+      ApiOkResponse({ type: ReadProblemIssueResponse }),
       ApiNotFoundResponse({
         description: ['PROBLEM_NOT_FOUND', 'ISSUE_NOT_FOUND'].join(', '),
       }),
@@ -179,6 +183,36 @@ export class JudgeDocs {
       ApiOkResponse({ type: DeleteProblemIssueResponse }),
       ApiNotFoundResponse({
         description: ['PROBLEM_NOT_FOUND'].join(', '),
+      }),
+    );
+  }
+
+  public static CreateProblemIssueComment() {
+    return applyDecorators(
+      ApiOperation({ summary: 'Problem Issue Comment 생성' }),
+      ApiOkResponse({ type: CreateProblemIssueCommentResponse }),
+      ApiForbiddenResponse({
+        description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
+      }),
+    );
+  }
+
+  public static UpdateProblemIssueComment() {
+    return applyDecorators(
+      ApiOperation({ summary: 'Problem Issue Comment 수정' }),
+      ApiOkResponse({ type: CreateProblemIssueCommentResponse }),
+      ApiForbiddenResponse({
+        description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
+      }),
+    );
+  }
+
+  public static DeleteProblemIssueComment() {
+    return applyDecorators(
+      ApiOperation({ summary: 'Problem Issue Comment 삭제' }),
+      ApiOkResponse({ type: DeleteProblemIssueCommentResponse }),
+      ApiForbiddenResponse({
+        description: ['ISSUE_COMMENT_NOT_FOUND'].join(', '),
       }),
     );
   }
