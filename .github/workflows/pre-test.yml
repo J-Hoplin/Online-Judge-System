@@ -58,6 +58,7 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   e2e-testing:
+    needs: unit-testing
     runs-on: ubuntu-latest
     steps:
       - name: Repository Checkout
