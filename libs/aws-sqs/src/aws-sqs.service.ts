@@ -22,10 +22,14 @@ export class AwsSqsService {
   }
 
   async sendTask(task: SQSTask) {
-    const command = new SendMessageCommand({
-      QueueUrl: this.sqsQueue,
-      MessageBody: JSON.stringify(task),
-    });
-    await this.sqsClient.send(command);
+    // Do send task if it's dev or production
+    if (process.env.ENV === 'dev' || process.env.ENV === 'production') {
+      const command = new SendMessageCommand({
+        QueueUrl: this.sqsQueue,
+        MessageBody: JSON.stringify(task),
+      });
+
+      await this.sqsClient.send(command);
+    }
   }
 }

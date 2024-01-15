@@ -28,6 +28,7 @@ export class ProblemGuard implements CanActivate {
       await this.prisma.problem.findUniqueOrThrow({
         where: {
           id: parseInt(problemId),
+          isOpen: true,
         },
       });
       return true;

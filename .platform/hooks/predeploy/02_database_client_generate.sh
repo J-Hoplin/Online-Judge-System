@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-# Add database migration script
+# Do not modify
 node node_modules/prisma/build/index.js generate

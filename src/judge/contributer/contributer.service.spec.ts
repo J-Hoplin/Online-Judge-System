@@ -70,6 +70,7 @@ describe('ContributerService', () => {
         problem: 'Problem',
         input: 'Input',
         output: 'Output',
+        isOpen: true,
         timeLimit: 10,
         memoryLimit: 10,
         tags: ['string'],

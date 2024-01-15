@@ -3,10 +3,11 @@ import { PaginateObject } from 'app/decorator';
 import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { UpdateExampleDto } from './dto';
+import { AwsSqsService } from 'aws-sqs/aws-sqs';
 
 @Injectable()
 export class ContributerService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private sqs: AwsSqsService) {}
 
   async listProblem(uid: string, search: string, pagination: PaginateObject) {
     return this.prisma.problem.findMany({
@@ -120,9 +121,17 @@ export class ContributerService {
         },
       },
     });
+
     if (!findExample) {
       throw new ForbiddenException('FORBIDDEN_REQUEST');
     }
+
+    // Send task to client
+    await this.sqs.sendTask({
+      id: pid,
+      message: 'RE_CORRECTION',
+    });
+
     return this.prisma.problemExample.update({
       where: {
         id: eid,
