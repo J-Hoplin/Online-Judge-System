@@ -5,6 +5,7 @@ import { PrismaService } from 'app/prisma/prisma.service';
 import { ProblemDomain, ProblemExampleDomain, UserDomain } from 'domains';
 import { userSignupGen } from 'test/mock-generator';
 import { ForbiddenException } from '@nestjs/common';
+import { AwsSqsModule } from 'aws-sqs/aws-sqs';
 
 describe('ContributerService', () => {
   let service: ContributerService;
@@ -23,7 +24,7 @@ describe('ContributerService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, AwsSqsModule],
       providers: [ContributerService],
     }).compile();
 
