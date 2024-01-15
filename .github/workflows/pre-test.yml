@@ -32,6 +32,11 @@ jobs:
           echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
           echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
+          echo "AWS_REGION"=${{secrets.AWS_REGION}}>> .ci.env
+          echo "AWS_ACCESS_ID=${{secrets.AWS_ACCESS_ID}}" >> .ci.env
+          echo "AWS_ACCESS_SECRET=${{secrets.AWS_ACCESS_SECRET}}" >> .ci.env
+          echo "AWS_SQS_QUEUE=${{secrets.AWS_SQS_QUEUE}}" >> .ci.env
+          echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
         run: npm install --force
       - name: Install dotenv-cli for dotenv cli
@@ -75,6 +80,11 @@ jobs:
           echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
           echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
+          echo "AWS_REGION"=${{secrets.AWS_REGION}}>> .ci.env
+          echo "AWS_ACCESS_ID=${{secrets.AWS_ACCESS_ID}}" >> .ci.env
+          echo "AWS_ACCESS_SECRET=${{secrets.AWS_ACCESS_SECRET}}" >> .ci.env
+          echo "AWS_SQS_QUEUE=${{secrets.AWS_SQS_QUEUE}}" >> .ci.env
+          echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
         run: npm install --force
       - name: Install dotenv-cli for dotenv cli
