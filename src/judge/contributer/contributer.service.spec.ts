@@ -59,7 +59,11 @@ describe('ContributerService', () => {
     });
     it('should create new example of problem1', async () => {
       // Create example of problem1
-      example1 = await service.createExmaple(user1.id, problem1.id);
+      example1 = await service.createExmaple(user1.id, problem1.id, {
+        input: '2 3 4',
+        output: '5 6 7',
+        isPublic: true,
+      });
       expect(example1).toBeTruthy();
     });
   });
