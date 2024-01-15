@@ -5,6 +5,7 @@ import { PrismaService } from 'app/prisma/prisma.service';
 import { ProblemDomain, ProblemExampleDomain, UserDomain } from 'domains';
 import { userSignupGen } from 'test/mock-generator';
 import { ForbiddenException } from '@nestjs/common';
+import { AwsSqsModule } from 'aws-sqs/aws-sqs';
 
 describe('ContributerService', () => {
   let service: ContributerService;
@@ -23,7 +24,7 @@ describe('ContributerService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, AwsSqsModule],
       providers: [ContributerService],
     }).compile();
 
@@ -58,7 +59,11 @@ describe('ContributerService', () => {
     });
     it('should create new example of problem1', async () => {
       // Create example of problem1
-      example1 = await service.createExmaple(user1.id, problem1.id);
+      example1 = await service.createExmaple(user1.id, problem1.id, {
+        input: '2 3 4',
+        output: '5 6 7',
+        isPublic: true,
+      });
       expect(example1).toBeTruthy();
     });
   });
@@ -70,6 +75,7 @@ describe('ContributerService', () => {
         problem: 'Problem',
         input: 'Input',
         output: 'Output',
+        isOpen: true,
         timeLimit: 10,
         memoryLimit: 10,
         tags: ['string'],

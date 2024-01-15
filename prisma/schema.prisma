@@ -53,6 +53,7 @@ model Problem {
   examples ProblemExample[]
   tags     Json
 
+  isOpen     Boolean   @default(false)
   isArchived Boolean   @default(false)
   deletedAt  DateTime?
 

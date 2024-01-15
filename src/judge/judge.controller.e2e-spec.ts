@@ -82,6 +82,16 @@ describe('/judge Judge Controller', () => {
       problemId = newProblem.body['id'];
     });
 
+    it('should set problem public', async () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .send({
+          isOpen: true,
+        })
+        .expect(200);
+    });
+
     it('should generate problme example', async () => {
       const example = await request(app.getHttpServer())
         .post(`/judge/contribute/problems/${problemId}/examples`)

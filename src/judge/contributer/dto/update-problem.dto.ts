@@ -1,6 +1,7 @@
 import { OmitType } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -23,6 +24,10 @@ export class UpdateProblmeDto extends OmitType(ProblemDomain, [
   @IsString()
   @IsOptional()
   problem: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isOpen: boolean;
 
   @IsString()
   @IsOptional()
