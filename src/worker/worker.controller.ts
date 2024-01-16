@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { WorkerDto } from 'aws-sqs/aws-sqs/dto';
 import { WorkerService } from './worker.service';
-import { SQSTask } from 'aws-sqs/aws-sqs/type';
 
 @Controller('worker')
 export class WorkerController {
@@ -8,7 +8,7 @@ export class WorkerController {
 
   @HttpCode(200)
   @Post()
-  workerController(@Body() dto: SQSTask) {
+  workerController(@Body() dto: WorkerDto) {
     return this.workerService.worker(dto);
   }
 }
