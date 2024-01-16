@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
-import { SQSTask } from 'aws-sqs/aws-sqs/type';
+import { WorkerDto } from 'aws-sqs/aws-sqs/dto';
 import { ProblemDomain, SubmissionDomain } from 'domains';
 import { Judge0Service } from 'judge/judge0';
 
@@ -10,7 +10,7 @@ export class WorkerService {
 
   constructor(private prisma: PrismaService, private judge0: Judge0Service) {}
 
-  async worker(dto: SQSTask) {
+  async worker(dto: WorkerDto) {
     switch (dto.message) {
       // Re-Correct if contributer modify example
       case 'RE_CORRECTION':
