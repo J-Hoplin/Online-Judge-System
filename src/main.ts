@@ -18,6 +18,11 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Online-Judge-Server')
     .setDescription('Online Judge Server')
+    .setContact(
+      'J-Hoplin',
+      'https://github.com/J-Hoplin',
+      'hoplin.dev@gmail.com',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
