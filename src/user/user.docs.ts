@@ -8,7 +8,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CheckCredentialResponse } from './response/check-credential.response';
-import { UserDomain } from 'domains';
+import { GetProfileResponse } from './response/get-profile.response';
 
 export class UserDocs {
   public static Controller() {
@@ -21,7 +21,7 @@ export class UserDocs {
         summary: '프로필 조회',
       }),
       ApiOkResponse({
-        type: UserDomain,
+        type: GetProfileResponse,
       }),
       ApiBearerAuth(),
     );
@@ -33,7 +33,7 @@ export class UserDocs {
         summary: '다른 사용자 프로필 조회',
       }),
       ApiOkResponse({
-        type: UserDomain,
+        type: GetProfileResponse,
       }),
       ApiBadRequestResponse({
         description: ['USER_NOT_FOUND'].join(', '),
@@ -63,7 +63,7 @@ export class UserDocs {
       }),
       ApiConsumes('multipart/form-data'),
       ApiOkResponse({
-        type: UserDomain,
+        type: GetProfileResponse,
       }),
       ApiBearerAuth(),
     );

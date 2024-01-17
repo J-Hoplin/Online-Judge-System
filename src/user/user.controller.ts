@@ -36,7 +36,7 @@ export class UserController {
   @UseGuards(LocalGuard)
   @UserDocs.GetMyProfile()
   getMyProfile(@GetUser() user: UserDomain) {
-    return user;
+    return this.userService.getMyProfile(user);
   }
 
   @Get('profile/:uid')

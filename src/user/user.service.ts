@@ -18,15 +18,35 @@ import { UserProfileImageDir } from 'app/config';
 export class UserService {
   constructor(private prisma: PrismaService, private s3: AwsS3Service) {}
 
+  async getMyProfile(user: UserDomain) {
+    user.profileImage = await this.s3.getSignedURL(
+      user.profileImage,
+      UserProfileImageDir,
+    );
+
+    delete user.password;
+    return user;
+  }
+
   async getProfile(uid: string) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: uid,
       },
     });
+
     if (!user) {
       throw new BadRequestException('USER_NOT_FOUND');
     }
+
+    user.profileImage = await this.s3.getSignedURL(
+      user.profileImage,
+      UserProfileImageDir,
+    );
+
+    // Remove Password field of user
+    delete user.password;
+
     return user;
   }
 
@@ -57,7 +77,7 @@ export class UserService {
   async updateUserInfo(
     user: UserDomain,
     dto: UpdateUserInfoDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     const validatePassword = await bcrypt.compare(dto.password, user.password);
 
@@ -68,6 +88,7 @@ export class UserService {
 
     delete dto.password;
     delete dto.profile;
+
     const data = {
       ...dto,
     };
@@ -91,6 +112,9 @@ export class UserService {
         updatedUser.profileImage,
         UserProfileImageDir,
       );
+
+      delete user.password;
+
       return updatedUser;
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
