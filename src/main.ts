@@ -1,11 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { InitializeAdmin } from './admin-init';
 import { AppModule } from './app.module';
+import { SentryFilter } from './filter';
+import * as Sentry from '@sentry/node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Get Express http adapter
+  const { httpAdapter } = app.get(HttpAdapterHost);
+
   app.enableCors();
   app.useGlobalPipes(
     // Docs: https://docs.nestjs.com/techniques/validation
@@ -34,6 +40,14 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document, {
     explorer: true,
   });
+
+  // Sentry
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+  });
+  app.useGlobalFilters(new SentryFilter(httpAdapter));
 
   await app.listen(process.env.PORT || 3000);
 }
