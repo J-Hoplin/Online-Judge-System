@@ -11,10 +11,12 @@ import { UserDomain } from 'domains';
 import { CheckCredentialDto, CredentialType, UpdatePasswordDto } from './dto';
 import { SetContributerDto } from './dto/set-contributor';
 import { UpdateUserInfoDto } from './dto/update-user-info.dto';
+import { AwsS3Service } from 's3/aws-s3';
+import { UserProfileImageDir } from 'app/config';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private s3: AwsS3Service) {}
 
   async getProfile(uid: string) {
     const user = await this.prisma.user.findUnique({
@@ -52,14 +54,28 @@ export class UserService {
     };
   }
 
-  async updateUserInfo(user: UserDomain, dto: UpdateUserInfoDto) {
+  async updateUserInfo(
+    user: UserDomain,
+    dto: UpdateUserInfoDto,
+    file: Express.Multer.File,
+  ) {
     const validatePassword = await bcrypt.compare(dto.password, user.password);
 
     // If fail to validate
     if (!validatePassword) {
       throw new UnauthorizedException('WRONG_CREDENTIAL');
     }
+
     delete dto.password;
+    delete dto.profile;
+    const data = {
+      ...dto,
+    };
+
+    if (file) {
+      const key = await this.s3.uploadFile(file, UserProfileImageDir);
+      data['profileImage'] = key;
+    }
 
     try {
       // If not update
@@ -68,9 +84,13 @@ export class UserService {
           id: user.id,
         },
         data: {
-          ...dto,
+          ...data,
         },
       });
+      updatedUser.profileImage = await this.s3.getSignedURL(
+        updatedUser.profileImage,
+        UserProfileImageDir,
+      );
       return updatedUser;
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {

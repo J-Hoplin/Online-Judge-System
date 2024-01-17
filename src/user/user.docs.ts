@@ -2,6 +2,7 @@ import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConsumes,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -60,6 +61,7 @@ export class UserDocs {
         summary: '사용자 정보 업데이트',
         description: 'Password가 요구됩니다.',
       }),
+      ApiConsumes('multipart/form-data'),
       ApiOkResponse({
         type: UserDomain,
       }),

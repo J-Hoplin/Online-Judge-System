@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { LocalGuard } from 'app/auth/guard';
 import { CheckCredentialDto, UpdatePasswordDto } from './dto';
@@ -18,6 +20,12 @@ import { Role } from 'app/decorator/role.decorator';
 import { RoleGuard } from 'app/guard';
 import { SetContributerDto } from './dto/set-contributor';
 import { UserDomain } from 'domains';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileNameTransformPipe,
+  FileOptionFactory,
+  UserProfileImageArtifactConfig,
+} from 'app/config';
 
 @Controller('user')
 @UserDocs.Controller()
@@ -46,10 +54,20 @@ export class UserController {
   }
 
   @Patch('profile')
+  @UseInterceptors(
+    FileInterceptor(
+      'profile',
+      FileOptionFactory(UserProfileImageArtifactConfig),
+    ),
+  )
   @UseGuards(LocalGuard)
   @UserDocs.updateUserInfo()
-  updateUserInfo(@GetUser() user: UserDomain, @Body() dto: UpdateUserInfoDto) {
-    return this.userService.updateUserInfo(user, dto);
+  updateUserInfo(
+    @GetUser() user: UserDomain,
+    @Body() dto: UpdateUserInfoDto,
+    @UploadedFile(FileNameTransformPipe) file: Express.Multer.File,
+  ) {
+    return this.userService.updateUserInfo(user, dto, file);
   }
 
   @Patch('password')
