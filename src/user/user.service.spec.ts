@@ -7,6 +7,7 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { CredentialType } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { UserDomain } from 'domains';
+import { AwsS3Module } from 's3/aws-s3';
 
 describe('UserService', () => {
   let service: UserService;
@@ -24,7 +25,7 @@ describe('UserService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, AwsS3Module],
       providers: [UserService],
     }).compile();
 
@@ -108,25 +109,37 @@ describe('UserService', () => {
 
   describe('updateUserInfo()', () => {
     it('should update user profile', async () => {
-      const result = await service.updateUserInfo(user3, {
-        blog: 'jhoplin7259.tistory.com',
-        nickname: 'nickname',
-        github: 'J-hoplin1',
-        message: 'message',
-        password: user3Singup.password,
-      });
+      const result = await service.updateUserInfo(
+        {
+          ...user3,
+        },
+        {
+          blog: 'jhoplin7259.tistory.com',
+          nickname: 'nickname',
+          github: 'J-hoplin1',
+          message: 'message',
+          password: user3Singup.password,
+        },
+        null,
+      );
       expect(result).not.toBeUndefined();
     });
 
     it('should throw if password unmatched', async () => {
       try {
-        await service.updateUserInfo(user3, {
-          blog: 'jhoplin7259.tistory.com',
-          nickname: 'nickname2',
-          github: 'J-hoplin1',
-          message: 'message',
-          password: 'wrong-password',
-        });
+        await service.updateUserInfo(
+          {
+            ...user3,
+          },
+          {
+            blog: 'jhoplin7259.tistory.com',
+            nickname: 'nickname2',
+            github: 'J-hoplin1',
+            message: 'message',
+            password: 'wrong-password',
+          },
+          null,
+        );
       } catch (err) {
         expect(err).toBeInstanceOf(UnauthorizedException);
       }
@@ -161,20 +174,30 @@ describe('UserService', () => {
 
   describe('setRole()', () => {
     it("should update user's role", async () => {
-      const updated = await service.setRole(user2, {
-        role: 'Contributer',
-        targetId: user3.id,
-      });
+      const updated = await service.setRole(
+        {
+          ...user2,
+        },
+        {
+          role: 'Contributer',
+          targetId: user3.id,
+        },
+      );
       expect(updated.id).toBe(user3.id);
       expect(updated.type).toBe('Contributer');
     });
 
     it('should throw if user not found', async () => {
       try {
-        await service.setRole(user2, {
-          role: 'Contributer',
-          targetId: 'target',
-        });
+        await service.setRole(
+          {
+            ...user2,
+          },
+          {
+            role: 'Contributer',
+            targetId: 'target',
+          },
+        );
       } catch (err) {
         expect(err).toBeInstanceOf(BadRequestException);
       }
