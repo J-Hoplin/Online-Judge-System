@@ -1,7 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 export class WorkerDocs {
+  public static Controller() {
+    return applyDecorators(ApiTags('Async Task'));
+  }
   public static WorkerController() {
     return applyDecorators(
       ApiOperation({
