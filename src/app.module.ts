@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JudgeModule } from './judge/judge.module';
 import { SystemLoggerModule } from './system-logger/system-logger.module';
 import { WorkerModule } from './worker/worker.module';
+import { ArtifactModule } from './artifact/artifact.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { WorkerModule } from './worker/worker.module';
     UserModule,
     JudgeModule,
     WorkerModule,
+    ArtifactModule,
   ],
   controllers: [AppController],
   providers: [AppService],

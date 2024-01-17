@@ -22,6 +22,8 @@ import { v4 } from 'uuid';
  * getSignedURL: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/modules/_aws_sdk_s3_request_presigner.html
  * PutObjectCommand: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/classes/putobjectcommand.html
  *
+ *
+ * 2024 Hoplin
  */
 
 @Injectable()
@@ -43,20 +45,25 @@ export class AwsS3Service {
   }
 
   /** Upload file */
-  public async uploadFile(file: Express.Multer.File, directory: string) {
+  public async uploadFile(
+    file: Express.Multer.File,
+    directory: string,
+    tag?: { [k: string]: string },
+  ) {
     /** Generate file salt */
     const fileSalt = v4();
     /** File name with salt */
     const fileKey = `${fileSalt}_${file.originalname}`;
     /** S3 upload location */
     const s3SavedIn = this.directoryBuilder(fileKey, directory);
+    const tagQuery = tag ? new URLSearchParams(tag).toString() : '';
     /** S3 Object put command */
     const command = new PutObjectCommand({
       Bucket: this.s3Bucket,
       Key: s3SavedIn,
       ContentType: file.mimetype,
       Body: file.buffer,
-      ACL: 'public-read',
+      Tagging: tagQuery,
     });
 
     await this.s3Client.send(command);
@@ -70,7 +77,7 @@ export class AwsS3Service {
       return null;
     }
     return `https://${process.env.AWS_S3_BUCKET}.s3.${
-      process.env.AWS_S3_Region
+      process.env.AWS_REGION
     }.amazonaws.com/${this.directoryBuilder(fileKey, directory)}`;
   }
 
