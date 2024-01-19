@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -12,8 +13,10 @@ import {
 } from 'app/config/artifact.config';
 import { ArtifactDocs } from './artifact.docs';
 import { ArtifactService } from './artifact.service';
+import { LocalGuard } from 'app/auth/guard';
 
 @Controller('artifact')
+@UseGuards(LocalGuard)
 @ArtifactDocs.Controller()
 export class ArtifactController {
   constructor(private artifactService: ArtifactService) {}
