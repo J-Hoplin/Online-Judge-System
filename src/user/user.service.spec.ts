@@ -7,7 +7,8 @@ import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { CredentialType } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { UserDomain } from 'domains';
-import { AwsS3Module } from 's3/aws-s3';
+import { AwsS3Module, AwsS3Service } from 's3/aws-s3';
+import { AwsS3LibraryMockProvider } from 'test/mock.provider';
 
 describe('UserService', () => {
   let service: UserService;
@@ -27,7 +28,10 @@ describe('UserService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [PrismaModule, AwsS3Module],
       providers: [UserService],
-    }).compile();
+    })
+      .overrideProvider(AwsS3Service)
+      .useValue(AwsS3LibraryMockProvider.useValue)
+      .compile();
 
     service = module.get<UserService>(UserService);
     prisma = module.get<PrismaService>(PrismaService);

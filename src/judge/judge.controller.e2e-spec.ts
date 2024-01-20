@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InitializeAdmin } from 'app/admin-init';
 import { AppModule } from 'app/app.module';
 import { PrismaService } from 'app/prisma/prisma.service';
+import { Judge0Service } from 'judge/judge0';
 import * as request from 'supertest';
 import { userSignupGen } from 'test/mock-generator';
+import { JudgeLibraryMockProvider } from 'test/mock.provider';
 import { BearerTokenHeader } from 'test/test-utils';
 
 describe('/judge Judge Controller', () => {
@@ -27,7 +29,10 @@ describe('/judge Judge Controller', () => {
   beforeAll(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Judge0Service)
+      .useValue(JudgeLibraryMockProvider.useValue)
+      .compile();
 
     app = testModule.createNestApplication();
     prisma = testModule.get<PrismaService>(PrismaService);

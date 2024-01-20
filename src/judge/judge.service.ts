@@ -149,7 +149,6 @@ export class JudgeService {
         );
       }),
     );
-
     return results.map((result) => {
       return {
         isCorrect: result.isCorrect,
