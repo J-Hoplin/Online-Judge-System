@@ -15,8 +15,10 @@ describe('/judge/contributer', () => {
   let user1Token: string;
   const user2 = userSignupGen();
   let user2Token: string;
+  let user2Id: string;
   let adminToken: string;
   let problemId: string;
+  let exampleId: number;
   //endpoints
 
   beforeAll(async () => {
@@ -57,6 +59,14 @@ describe('/judge/contributer', () => {
       user2Token = signup.body['accessToken'];
     });
 
+    it('should get user2 id', async () => {
+      const getProfile = await request(app.getHttpServer())
+        .get('/user/profile')
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(200);
+      user2Id = getProfile.body['id'];
+    });
+
     it('should signup admin', async () => {
       const signin = await request(app.getHttpServer())
         .post('/auth/signin')
@@ -69,7 +79,20 @@ describe('/judge/contributer', () => {
       expect(signin.body).not.toBeUndefined();
       adminToken = signin.body['accessToken'];
     });
+
+    it('should change user2 as contributer', () => {
+      return request(app.getHttpServer())
+        .patch('/user/admin/role')
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .send({
+          role: 'Contributer',
+          targetId: user2Id,
+        })
+        .expect(200);
+    });
   });
+
+  // Test
 
   describe('/problems GET', () => {
     it('should throw if unauthenticated', async () => {
@@ -124,7 +147,7 @@ describe('/judge/contributer', () => {
         .set('Authorization', BearerTokenHeader(user1Token))
         .expect(403);
     });
-    it('should throw if others tries to access problem', () => {
+    it('should throw if others contributer tries to access problem', () => {
       return request(app.getHttpServer())
         .get(`/judge/contribute/problems/${problemId}`)
         .set('Authorization', BearerTokenHeader(user2Token))
@@ -133,6 +156,164 @@ describe('/judge/contributer', () => {
     it('should read problem', () => {
       return request(app.getHttpServer())
         .get(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .expect(200);
+    });
+  });
+
+  describe('/problems/:pid PATCH', () => {
+    it('should throw if unauthenticated', async () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .expect(401);
+    });
+    it('should throw if unauthorized', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(user1Token))
+        .expect(403);
+    });
+    it('should throw if other contributer tries to modify problem', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(403);
+    });
+    it('should patch problem', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .send({
+          title: 'string',
+          problem: 'string',
+          input: 'string',
+          output: 'string',
+          timeLimit: 0,
+          memoryLimit: 0,
+          tags: ['sort', 'bfs', 'math'],
+          isOpen: true,
+        })
+        .expect(200);
+    });
+  });
+
+  describe('/problmes/:pid/examples POST', () => {
+    it('should throw if unauthenticated', () => {
+      return request(app.getHttpServer())
+        .post(`/judge/contribute/problems/${problemId}/examples`)
+        .expect(401);
+    });
+
+    it('should throw if unauthorized', () => {
+      return request(app.getHttpServer())
+        .post(`/judge/contribute/problems/${problemId}/examples`)
+        .set('Authorization', BearerTokenHeader(user1Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to create example', () => {
+      return request(app.getHttpServer())
+        .post(`/judge/contribute/problems/${problemId}/examples`)
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(403);
+    });
+
+    it('should create example for question', async () => {
+      const response = await request(app.getHttpServer())
+        .post(`/judge/contribute/problems/${problemId}/examples`)
+        .set(`Authorization`, BearerTokenHeader(adminToken))
+        .send({
+          input: 'string',
+          output: 'string',
+          isPublic: true,
+        })
+        .expect(201);
+      exampleId = response.body['id'];
+    });
+  });
+
+  describe('/problems/:pid/examples/:eid PATCH', () => {
+    it('should throw if unauthenticated', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .expect(401);
+    });
+
+    it('should throw if unauthorized', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(user1Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to modify exmaple', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(403);
+    });
+
+    it('should modify example', () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .expect(200);
+    });
+  });
+
+  describe('/problem/:pid/examples/:eid DELETE', () => {
+    it('should throw if unauthenticated', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .expect(401);
+    });
+
+    it('should throw if unauthorized', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(user1Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to modify', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to modify', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}/examples/${exampleId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .expect(200);
+    });
+  });
+
+  describe('/problem/:pid DELETE', () => {
+    it('should throw if unauthenticated', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}`)
+        .expect(401);
+    });
+
+    it('should throw if unauthorized', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(user1Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to modify', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(user2Token))
+        .expect(403);
+    });
+
+    it('should throw if other contributer tries to modify', () => {
+      return request(app.getHttpServer())
+        .delete(`/judge/contribute/problems/${problemId}`)
         .set('Authorization', BearerTokenHeader(adminToken))
         .expect(200);
     });

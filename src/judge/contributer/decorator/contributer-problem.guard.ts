@@ -36,7 +36,6 @@ export class ContributerProblemGuard implements CanActivate {
       });
       return true;
     } catch (err) {
-      console.error(err);
       if (err.code === 'P2025') {
         throw new ForbiddenException('FORBIDDEN_REQUEST');
       }
