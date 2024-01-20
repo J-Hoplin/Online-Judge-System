@@ -7,7 +7,13 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "coverageDirectory": "../unit-coverage",
-  "collectCoverageFrom": ["**/*\\.service\\.(t|j)s"],
+  "collectCoverageFrom": [
+    "**/*\\.service\\.(t|j)s",
+    "!**/worker/**",
+    "!**/system-logger/**",
+    "!**/prisma/**",
+    "!**/artifact/**"
+  ],
   "moduleNameMapper": {
     "app/(.*)": "<rootDir>/../src/$1",
     "test/(.*)": "<rootDir>/../test/$1",
