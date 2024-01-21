@@ -7,13 +7,13 @@
 
 ## Contents
 
-- [🔖 Diagram](#diagram)
-- [📊 Test Coverage](#test-coverage)
-- [🧰 Technical Stack](#technical-stack)
-- [✅ Run Application](#run-application)
-- [📄 Run E2E Test](#run-e2e-test)
-- [📄 Run Unit Test](#run-unit-test)
-- [📝 TODO](#todo)
+- [🔖Diagram](#diagram)
+- [📊Test Coverage](#test-coverage)
+- [🧰Technical Stack](#technical-stack)
+- [✅Run Application](#run-application)
+- [📄Run E2E Test](#run-e2e-test)
+- [📄Run Unit Test](#run-unit-test)
+- [📝TODO](#todo)
 
 ## Diagram
 
