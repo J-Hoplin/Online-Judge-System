@@ -1,5 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
@@ -11,7 +12,7 @@ import { UploadStaticArtifactResponse } from './response';
 
 export class ArtifactDocs {
   public static Controller() {
-    return applyDecorators(ApiTags('Artifact'));
+    return applyDecorators(ApiTags('Artifact'), ApiBearerAuth());
   }
   public static uploadStaticArtifact() {
     return applyDecorators(
