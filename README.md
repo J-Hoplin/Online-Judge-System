@@ -1,28 +1,35 @@
 # Online Judge System API
 
----
+- Author: J-Hoplin
+- Team
+  - J-Hoplin: Backend & Infrastructure
+  - Oseungkwon: Frontend
 
-# Diagram
+## Contents
+
+- [🔖 Diagram](#diagram)
+- [📊 Test Coverage](#test-coverage)
+- [🧰 Technical Stack](#technical-stack)
+- [✅ Run Application](#run-application)
+- [📄 Run E2E Test](#run-e2e-test)
+- [📄 Run Unit Test](#run-unit-test)
+- [📝 TODO](#todo)
+
+## Diagram
 
 ![](img/diagram.png)
 
----
-
-# Frontend Repository
+## Frontend Repository
 
 - Author: Oseungkwon
 - [Repository](https://github.com/OseungKwon/Online-Judge-System-Web)
 
----
-
-# Test Coverage
+## Test Coverage
 
 - E2E Test: 88.12%
 - Unit & Integration Test: 79.13%
 
----
-
-# Technical Stack
+## Technical Stack
 
 - Language
   - TypeScript(Node.js v18 Runtime)
@@ -56,9 +63,7 @@
 - Alert
   - Discord
 
----
-
-# Run Application
+## Run Application
 
 1. Git clone repository
 
@@ -98,9 +103,7 @@
    yarn dev
    ```
 
----
-
-# Run E2E Test
+## Run E2E Test
 
 - Config: test/jest-e2e.json
 - Mock Provider: test/mock.provider.ts
@@ -129,9 +132,7 @@
    yarn test:e2e:cov
    ```
 
----
-
-# Run Unit Test
+## Run Unit Test
 
 - Config: test/jest-unit.json
 - Mock Provider: test/mock.provider.ts
@@ -159,3 +160,11 @@
    ```
    yarn test:unit:cov
    ```
+
+## TODO
+
+- [ ] Apply Strategy Pattern to Asynchronous Worker
+  - Use Nest.js Custom Provider
+  - Rabbit MQ Strategy & AWS SQS Strategy
+- Make Online Judge Server with Golang
+  - Now using [Judge0](https://judge0.com) based custom server
