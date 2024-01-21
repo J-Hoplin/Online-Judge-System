@@ -56,6 +56,7 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Discord Alert - Failed'
         if: steps.unit-test-phase.outcome != 'success'
+        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
@@ -104,6 +105,7 @@ jobs:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Discord Alert - Fail'
         if: steps.e2e-test-phase.outcome != 'success'
+        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
