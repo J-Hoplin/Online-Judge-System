@@ -166,5 +166,5 @@
 - [ ] Apply Strategy Pattern to Asynchronous Worker
   - Use Nest.js Custom Provider
   - Rabbit MQ Strategy & AWS SQS Strategy
-- Make Online Judge Server with Golang
+- [ ] Make Online Judge Server with Golang
   - Now using [Judge0](https://judge0.com) based custom server
