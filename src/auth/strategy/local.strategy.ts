@@ -20,6 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
         id,
       },
     });
+
     if (!user) {
       throw new ForbiddenException('FORBIDDEN_REQUEST');
     }

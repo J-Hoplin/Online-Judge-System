@@ -6,8 +6,16 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "testTimeout": 20000,
+  "setupFilesAfterEnv": ["<rootDir>/../test/jest-extended.ts"],
   "coverageDirectory": "../unit-coverage",
-  "collectCoverageFrom": ["**/*\\.service\\.(t|j)s"],
+  "collectCoverageFrom": [
+    "**/*\\.service\\.(t|j)s",
+    "!**/worker/**",
+    "!**/system-logger/**",
+    "!**/prisma/**",
+    "!**/artifact/**"
+  ],
   "moduleNameMapper": {
     "app/(.*)": "<rootDir>/../src/$1",
     "test/(.*)": "<rootDir>/../test/$1",

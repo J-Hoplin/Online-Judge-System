@@ -7,5 +7,6 @@ import { AwsS3Module } from 's3/aws-s3';
   imports: [AwsS3Module],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

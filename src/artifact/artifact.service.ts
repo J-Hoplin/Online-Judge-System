@@ -20,7 +20,6 @@ export class ArtifactService {
         url,
       };
     } catch (err) {
-      console.log(err);
       return {
         success: false,
         url: '',
