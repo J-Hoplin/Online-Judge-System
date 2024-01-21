@@ -9,6 +9,7 @@ import * as bcrypt from 'bcryptjs';
 import { UserDomain } from 'domains';
 import { AwsS3Module, AwsS3Service } from 's3/aws-s3';
 import { AwsS3LibraryMockProvider } from 'test/mock.provider';
+import { v4 } from 'uuid';
 
 describe('UserService', () => {
   let service: UserService;
@@ -119,7 +120,7 @@ describe('UserService', () => {
         },
         {
           blog: 'jhoplin7259.tistory.com',
-          nickname: 'nickname',
+          nickname: v4().split('-')[0],
           github: 'J-hoplin1',
           message: 'message',
           password: user3Singup.password,

@@ -9,7 +9,16 @@ import { AwsS3Service } from 's3/aws-s3';
 export const JudgeLibraryMockProvider: ValueProvider = {
   provide: Judge0Service,
   useValue: {
-    getLanguages: () => [],
+    getLanguages: () => [
+      {
+        id: 0,
+        name: 'string',
+      },
+      {
+        id: 0,
+        name: 'string',
+      },
+    ],
     submit: (...args) => {
       return {
         isCorrect: true,

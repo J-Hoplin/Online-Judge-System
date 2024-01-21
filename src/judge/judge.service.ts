@@ -332,7 +332,7 @@ export class JudgeService {
       },
     });
     return {
-      aggreate: aggregationMap,
+      aggregate: aggregationMap,
       data: submissions,
     };
   }
@@ -432,27 +432,34 @@ export class JudgeService {
   }
 
   async readProblemIssue(pid: number, iid: number) {
-    return await this.prisma.problemIssue.findUniqueOrThrow({
-      where: {
-        id: iid,
-        problemId: pid,
-      },
-      include: {
-        issuer: {
-          select: {
-            id: true,
-            nickname: true,
-          },
+    try {
+      return await this.prisma.problemIssue.findUniqueOrThrow({
+        where: {
+          id: iid,
+          problemId: pid,
         },
-        problem: {
-          select: {
-            id: true,
-            title: true,
+        include: {
+          issuer: {
+            select: {
+              id: true,
+              nickname: true,
+            },
           },
+          problem: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+          comments: true,
         },
-        comments: true,
-      },
-    });
+      });
+    } catch (err) {
+      if (err.code === 'P2025') {
+        throw new ForbiddenException('ISSUE_NOT_FOUND');
+      }
+      throw err;
+    }
   }
 
   async createProblemIssue(
@@ -527,21 +534,23 @@ export class JudgeService {
           id: iid,
         },
       });
+      // Create new issue comment
+      return await this.prisma.problemIssueComment.create({
+        data: {
+          userId: uid,
+          issueId: iid,
+          problemId: pid,
+          content: dto.content,
+        },
+      });
     } catch (err) {
-      if (err.code === 'P2025') {
+      // P2003
+      // Unique Constraint Error
+      if (err.code === 'P2025' || err.code === 'P2003') {
         throw new ForbiddenException('ISSUE_NOT_FOUND');
       }
       throw err;
     }
-    // Create new issue comment
-    return await this.prisma.problemIssueComment.create({
-      data: {
-        userId: uid,
-        issueId: iid,
-        problemId: pid,
-        content: dto.content,
-      },
-    });
   }
 
   async updateProblemIssueComment(

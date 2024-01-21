@@ -6,6 +6,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "setupFilesAfterEnv": ["<rootDir>/../test/jest-extended.ts"],
   "coverageDirectory": "../e2e-coverage",
   "collectCoverageFrom": [
     "**/*\\.controller\\.(t|j)s",

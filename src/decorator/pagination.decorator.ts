@@ -2,7 +2,7 @@ import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 
-const defaultPage = 1;
+const defaultPage = 0;
 const defaultOffset = 10;
 
 export type PaginateObject = {
