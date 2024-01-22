@@ -121,7 +121,7 @@ describe('/judge Judge Controller', () => {
   // Test
   describe('/languages GET', () => {
     it('should throw if unauthenticated', async () => {
-      return request(app.getHttpServer()).get('/judge').expect(401);
+      return request(app.getHttpServer()).get('/judge/languages').expect(401);
     });
     it('should get language list', async () => {
       return request(app.getHttpServer())
@@ -132,8 +132,8 @@ describe('/judge Judge Controller', () => {
   });
 
   describe('/ GET', () => {
-    it('should throw if unauthenticated', async () => {
-      return request(app.getHttpServer()).get('/judge').expect(401);
+    it('should allow unauthenticated', async () => {
+      return request(app.getHttpServer()).get('/judge').expect(200);
     });
     it('should get problem list', async () => {
       return request(app.getHttpServer())
@@ -144,10 +144,10 @@ describe('/judge Judge Controller', () => {
   });
 
   describe('/:pid GET', () => {
-    it('should throw if unauthenticated', async () => {
+    it('should allow unauthenticated', async () => {
       return request(app.getHttpServer())
         .get(`/judge/${problemId}`)
-        .expect(401);
+        .expect(200);
     });
     it('should get problem info', async () => {
       return request(app.getHttpServer())
