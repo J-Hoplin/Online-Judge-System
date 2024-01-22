@@ -1,12 +1,15 @@
-import { applyDecorators } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiExtraModels,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 
 import { PaginationDocs } from 'app/decorator';
@@ -17,10 +20,12 @@ import {
   DeleteProblemIssueCommentResponse,
   DeleteProblemIssueResponse,
   GetLanguagesResponse,
+  ListProblemAuthorizedResponse,
   ListProblemIssueResponse,
-  ListProblemResponse,
+  ListProblemUnautorizedResponse,
   ListUserSubmissionRepsonse,
-  ReadProblemResponse,
+  ReadProblemAuthenticatedResponse,
+  ReadProblemUnauthenticatedResponse,
   ReadPublicSubmissionResponse,
   RunProblemResponse,
   SubmitProblemResponse,
@@ -41,7 +46,59 @@ export class JudgeDocs {
   public static ListProblem() {
     return applyDecorators(
       ApiOperation({ summary: '문제 리스트 출력' }),
-      ApiOkResponse({ type: ListProblemResponse, isArray: true }),
+      ApiExtraModels(
+        ListProblemUnautorizedResponse,
+        ListProblemAuthorizedResponse,
+      ),
+      ApiResponse({
+        status: HttpStatus.OK,
+        content: {
+          'application/json': {
+            schema: {
+              oneOf: [
+                {
+                  $ref: getSchemaPath(ListProblemAuthorizedResponse),
+                },
+                {
+                  $ref: getSchemaPath(ListProblemUnautorizedResponse),
+                },
+              ],
+            },
+            examples: {
+              Authenticated: {
+                value: [
+                  {
+                    id: 11,
+                    title: 'New Problem',
+                    contributer: {
+                      nickname: 'admin',
+                    },
+                    correct: 1,
+                    total: 1,
+                    correctionRate: '1.000',
+                    status: 'SUCCESS',
+                  },
+                ],
+              },
+              Unauthenticated: {
+                value: [
+                  {
+                    id: 10,
+                    title: 'string',
+                    contributer: {
+                      nickname: 'admin',
+                    },
+                    correct: 0,
+                    total: 1,
+                    correctionRate: '0.000',
+                  },
+                ],
+              },
+            },
+          },
+        },
+      }),
+
       ...PaginationDocs,
     );
   }
@@ -52,9 +109,81 @@ export class JudgeDocs {
         summary:
           '문제 반환. 비로그인 사용 가능 API. 비로그인 사용하는 경우에는 `isSuccess` 필드가 없습니다. Enum은 Response Schema 참고바랍니다.',
       }),
-      ApiOkResponse({
-        type: ReadProblemResponse,
+      ApiResponse({
+        status: HttpStatus.OK,
+        content: {
+          'application/json': {
+            schema: {
+              oneOf: [
+                {
+                  $ref: getSchemaPath(ReadProblemAuthenticatedResponse),
+                },
+                {
+                  $ref: getSchemaPath(ReadProblemUnauthenticatedResponse),
+                },
+              ],
+            },
+            examples: {
+              Authenticated: {
+                value: {
+                  id: 11,
+                  title: 'New Problem',
+                  problem: 'Problem Here',
+                  input: 'Input Here',
+                  output: 'Output Here',
+                  timeLimit: 5,
+                  memoryLimit: 128,
+                  contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+                  tags: [],
+                  isOpen: true,
+                  isArchived: false,
+                  deletedAt: null,
+                  createdAt: '2024-01-16T14:12:07.748Z',
+                  updatedAt: '2024-01-16T14:12:39.185Z',
+                  examples: [
+                    {
+                      id: 6,
+                      input: '',
+                      output: 'hello world',
+                      isPublic: true,
+                      problemId: 11,
+                    },
+                  ],
+                  isSuccess: 'SUCCESS',
+                },
+              },
+              Unauthenticated: {
+                value: {
+                  id: 11,
+                  title: 'New Problem',
+                  problem: 'Problem Here',
+                  input: 'Input Here',
+                  output: 'Output Here',
+                  timeLimit: 5,
+                  memoryLimit: 128,
+                  contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+                  tags: [],
+                  isOpen: true,
+                  isArchived: false,
+                  deletedAt: null,
+                  createdAt: '2024-01-16T14:12:07.748Z',
+                  updatedAt: '2024-01-16T14:12:39.185Z',
+                  examples: [
+                    {
+                      id: 6,
+                      input: '',
+                      output: 'hello world',
+                      isPublic: true,
+                      problemId: 11,
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
       }),
+
       ApiNotFoundResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
     );
   }

@@ -6,7 +6,7 @@ export class ListProblemContributerResponse extends PickType(UserDomain, [
   'nickname',
 ]) {}
 
-export class ListProblemResponse extends PickType(ProblemDomain, [
+export class ListProblemUnautorizedResponse extends PickType(ProblemDomain, [
   'id',
   'title',
 ]) {
@@ -23,7 +23,9 @@ export class ListProblemResponse extends PickType(ProblemDomain, [
 
   @ApiProperty()
   correctionRate: number;
+}
 
+export class ListProblemAuthorizedResponse extends ListProblemUnautorizedResponse {
   @ApiProperty({
     enum: ProblemStatus,
   })
