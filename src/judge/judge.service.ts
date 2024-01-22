@@ -17,6 +17,7 @@ import {
   UpdateSubmissionDto,
 } from './dto';
 import { GetLanguagesResponse } from './response/get-languages.response';
+import { ProblemStatus } from 'app/type';
 
 /**
  * Prisma 2025 -> Target entity not found
@@ -46,11 +47,16 @@ export class JudgeService {
     return list;
   }
 
-  async listProblem(filter: JudgeFilterObject, paginate: PaginateObject) {
+  async listProblem(
+    filter: JudgeFilterObject,
+    paginate: PaginateObject,
+    req: any,
+  ) {
     const problems = await this.prisma.problem.findMany({
       ...paginate,
       where: {
         ...filter.Where,
+        isOpen: true,
       },
       orderBy: {
         ...filter.Orderby,
@@ -91,31 +97,124 @@ export class JudgeService {
         }
       });
 
-      const correctionRate = (correct / total).toFixed(3);
-      filteredList.push({
+      let correctionRate;
+      // Correction Rate
+      if (total) {
+        correctionRate = (correct / total).toFixed(3);
+      } else {
+        correctionRate = 0;
+      }
+
+      const problemItem = {
         ...problem,
         correct,
         total,
         correctionRate,
-      });
+      };
+
+      // Check if correct
+      if (req?.user) {
+        const submissionsAggregate = await this.prisma.submission.groupBy({
+          by: ['isCorrect'],
+          _count: {
+            _all: true,
+          },
+          where: {
+            userId: req['user']['id'],
+            problemId: problem.id,
+          },
+        });
+        let all = 0;
+        let success = 0;
+        let status: ProblemStatus;
+        for (const group of submissionsAggregate) {
+          // Count all of submission
+          all += group._count._all;
+          // Count correct submission
+          if (group.isCorrect) {
+            success += 1;
+          }
+        }
+        // If submission not exist
+        if (!all) {
+          status = ProblemStatus.PENDING;
+        } else if (all && success > 0) {
+          status = ProblemStatus.SUCCESS;
+        } else {
+          status = ProblemStatus.FAIL;
+        }
+        problemItem['isSuccess'] = status;
+      }
+
+      filteredList.push(problemItem);
     }
 
     return filteredList;
   }
 
-  async readProblem(pid: number) {
-    return await this.prisma.problem.findUniqueOrThrow({
-      where: {
-        id: pid,
-      },
-      include: {
-        examples: {
-          where: {
-            isPublic: true,
+  async readProblem(pid: number, req: any) {
+    if (req?.user) {
+      // If authorized user -> return submission with correct
+      const problem = await this.prisma.problem.findUnique({
+        where: {
+          id: pid,
+        },
+        include: {
+          examples: {
+            where: {
+              isPublic: true,
+            },
           },
         },
-      },
-    });
+      });
+      const submissionsAggregate = await this.prisma.submission.groupBy({
+        by: ['isCorrect'],
+        _count: {
+          _all: true,
+        },
+        where: {
+          userId: req['user']['id'],
+          problemId: pid,
+        },
+      });
+      let all = 0;
+      let success = 0;
+      let status: ProblemStatus;
+      for (const group of submissionsAggregate) {
+        // Count all of submission
+        all += group._count._all;
+        // Count correct submission
+        if (group.isCorrect) {
+          success += 1;
+        }
+      }
+
+      // If submission not exist
+      if (!all) {
+        status = ProblemStatus.PENDING;
+      } else if (all && success > 0) {
+        status = ProblemStatus.SUCCESS;
+      } else {
+        status = ProblemStatus.FAIL;
+      }
+      return {
+        ...problem,
+        isSuccess: status,
+      };
+    } else {
+      return await this.prisma.problem.findUnique({
+        where: {
+          id: pid,
+        },
+        include: {
+          examples: {
+            where: {
+              isPublic: true,
+            },
+          },
+        },
+      });
+    }
   }
 
   async runProblem(pid: number, dto: RunProblemDto) {
