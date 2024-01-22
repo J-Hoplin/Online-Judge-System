@@ -2,7 +2,6 @@ import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiExtraModels,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -13,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 
 import { PaginationDocs } from 'app/decorator';
+import { ApiMultipleResponse } from 'app/decorator/multiple-response.decorator';
 import { ProblemIssueDomain, SubmissionDomain } from 'domains';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import {
@@ -20,9 +20,9 @@ import {
   DeleteProblemIssueCommentResponse,
   DeleteProblemIssueResponse,
   GetLanguagesResponse,
-  ListProblemAuthorizedResponse,
+  ListProblemAuthenticatedResponse,
   ListProblemIssueResponse,
-  ListProblemUnautorizedResponse,
+  ListProblemUnAuthenticatedResponse,
   ListUserSubmissionRepsonse,
   ReadProblemAuthenticatedResponse,
   ReadProblemUnauthenticatedResponse,
@@ -46,59 +46,39 @@ export class JudgeDocs {
   public static ListProblem() {
     return applyDecorators(
       ApiOperation({ summary: '문제 리스트 출력' }),
-      ApiExtraModels(
-        ListProblemUnautorizedResponse,
-        ListProblemAuthorizedResponse,
-      ),
-      ApiResponse({
-        status: HttpStatus.OK,
-        content: {
-          'application/json': {
-            schema: {
-              oneOf: [
-                {
-                  $ref: getSchemaPath(ListProblemAuthorizedResponse),
-                },
-                {
-                  $ref: getSchemaPath(ListProblemUnautorizedResponse),
-                },
-              ],
+      ApiMultipleResponse(HttpStatus.OK, {
+        Authenticated: {
+          classRef: ListProblemUnAuthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            contributer: {
+              nickname: 'admin',
             },
-            examples: {
-              Authenticated: {
-                value: [
-                  {
-                    id: 11,
-                    title: 'New Problem',
-                    contributer: {
-                      nickname: 'admin',
-                    },
-                    correct: 1,
-                    total: 1,
-                    correctionRate: '1.000',
-                    status: 'SUCCESS',
-                  },
-                ],
-              },
-              Unauthenticated: {
-                value: [
-                  {
-                    id: 10,
-                    title: 'string',
-                    contributer: {
-                      nickname: 'admin',
-                    },
-                    correct: 0,
-                    total: 1,
-                    correctionRate: '0.000',
-                  },
-                ],
-              },
-            },
+            correct: 1,
+            total: 1,
+            correctionRate: '1.000',
+            status: 'SUCCESS',
           },
+          isArray: true,
+          description: 'If authenticated response',
+        },
+        UnAuthenticated: {
+          classRef: ListProblemAuthenticatedResponse,
+          example: {
+            id: 10,
+            title: 'string',
+            contributer: {
+              nickname: 'admin',
+            },
+            correct: 0,
+            total: 1,
+            correctionRate: '0.000',
+          },
+          isArray: true,
+          description: 'If Unauthenticated Response',
         },
       }),
-
       ...PaginationDocs,
     );
   }
@@ -109,77 +89,62 @@ export class JudgeDocs {
         summary:
           '문제 반환. 비로그인 사용 가능 API. 비로그인 사용하는 경우에는 `isSuccess` 필드가 없습니다. Enum은 Response Schema 참고바랍니다.',
       }),
-      ApiResponse({
-        status: HttpStatus.OK,
-        content: {
-          'application/json': {
-            schema: {
-              oneOf: [
-                {
-                  $ref: getSchemaPath(ReadProblemAuthenticatedResponse),
-                },
-                {
-                  $ref: getSchemaPath(ReadProblemUnauthenticatedResponse),
-                },
-              ],
-            },
-            examples: {
-              Authenticated: {
-                value: {
-                  id: 11,
-                  title: 'New Problem',
-                  problem: 'Problem Here',
-                  input: 'Input Here',
-                  output: 'Output Here',
-                  timeLimit: 5,
-                  memoryLimit: 128,
-                  contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
-                  tags: [],
-                  isOpen: true,
-                  isArchived: false,
-                  deletedAt: null,
-                  createdAt: '2024-01-16T14:12:07.748Z',
-                  updatedAt: '2024-01-16T14:12:39.185Z',
-                  examples: [
-                    {
-                      id: 6,
-                      input: '',
-                      output: 'hello world',
-                      isPublic: true,
-                      problemId: 11,
-                    },
-                  ],
-                  isSuccess: 'SUCCESS',
-                },
+      ApiMultipleResponse(HttpStatus.OK, {
+        Authenticated: {
+          classRef: ReadProblemAuthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            problem: 'Problem Here',
+            input: 'Input Here',
+            output: 'Output Here',
+            timeLimit: 5,
+            memoryLimit: 128,
+            contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+            tags: [],
+            isOpen: true,
+            isArchived: false,
+            deletedAt: null,
+            createdAt: '2024-01-16T14:12:07.748Z',
+            updatedAt: '2024-01-16T14:12:39.185Z',
+            examples: [
+              {
+                id: 6,
+                input: '',
+                output: 'hello world',
+                isPublic: true,
+                problemId: 11,
               },
-              Unauthenticated: {
-                value: {
-                  id: 11,
-                  title: 'New Problem',
-                  problem: 'Problem Here',
-                  input: 'Input Here',
-                  output: 'Output Here',
-                  timeLimit: 5,
-                  memoryLimit: 128,
-                  contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
-                  tags: [],
-                  isOpen: true,
-                  isArchived: false,
-                  deletedAt: null,
-                  createdAt: '2024-01-16T14:12:07.748Z',
-                  updatedAt: '2024-01-16T14:12:39.185Z',
-                  examples: [
-                    {
-                      id: 6,
-                      input: '',
-                      output: 'hello world',
-                      isPublic: true,
-                      problemId: 11,
-                    },
-                  ],
-                },
+            ],
+            isSuccess: 'SUCCESS',
+          },
+        },
+        UnAuthenticated: {
+          classRef: ReadProblemUnauthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            problem: 'Problem Here',
+            input: 'Input Here',
+            output: 'Output Here',
+            timeLimit: 5,
+            memoryLimit: 128,
+            contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+            tags: [],
+            isOpen: true,
+            isArchived: false,
+            deletedAt: null,
+            createdAt: '2024-01-16T14:12:07.748Z',
+            updatedAt: '2024-01-16T14:12:39.185Z',
+            examples: [
+              {
+                id: 6,
+                input: '',
+                output: 'hello world',
+                isPublic: true,
+                problemId: 11,
               },
-            },
+            ],
           },
         },
       }),
