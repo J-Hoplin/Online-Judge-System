@@ -15,7 +15,7 @@ import { CheckCredentialDto, UpdatePasswordDto } from './dto';
 import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 import { UserDocs } from './user.docs';
 import { UserService } from './user.service';
-import { GetUser } from 'app/decorator';
+import { AllowPublic, GetUser } from 'app/decorator';
 import { Role } from 'app/decorator/role.decorator';
 import { RoleGuard } from 'app/guard';
 import { SetContributerDto } from './dto/set-contributor';
@@ -28,19 +28,18 @@ import {
 } from 'app/config';
 
 @Controller('user')
+@UseGuards(LocalGuard)
 @UserDocs.Controller()
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile')
-  @UseGuards(LocalGuard)
   @UserDocs.GetMyProfile()
   getMyProfile(@GetUser() user: UserDomain) {
     return this.userService.getMyProfile(user);
   }
 
   @Get('profile/:uid')
-  @UseGuards(LocalGuard)
   @UserDocs.GetProfile()
   getProfile(@Param('uid') uid: string) {
     return this.userService.getProfile(uid);
@@ -48,6 +47,7 @@ export class UserController {
 
   @Post('credential')
   @HttpCode(200)
+  @AllowPublic()
   @UserDocs.CheckCredential()
   checkCredential(@Body() dto: CheckCredentialDto) {
     return this.userService.checkCredential(dto);
@@ -60,7 +60,6 @@ export class UserController {
       FileOptionFactory(UserProfileImageArtifactConfig),
     ),
   )
-  @UseGuards(LocalGuard)
   @UserDocs.updateUserInfo()
   updateUserInfo(
     @GetUser() user: UserDomain,
@@ -71,7 +70,6 @@ export class UserController {
   }
 
   @Patch('password')
-  @UseGuards(LocalGuard)
   @UserDocs.updatePassword()
   updatePassword(@GetUser() user: UserDomain, @Body() dto: UpdatePasswordDto) {
     return this.userService.updatePassword(user, dto);
@@ -80,7 +78,6 @@ export class UserController {
   @Patch(['admin/role', 'role'])
   @Role(['Admin'])
   @UseGuards(RoleGuard)
-  @UseGuards(LocalGuard)
   @UserDocs.setRole()
   setRole(@GetUser() user: UserDomain, @Body() dto: SetContributerDto) {
     return this.userService.setRole(user, dto);
