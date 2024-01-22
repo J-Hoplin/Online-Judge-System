@@ -6,13 +6,11 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
-  getSchemaPath,
 } from '@nestjs/swagger';
 
 import { PaginationDocs } from 'app/decorator';
-import { ApiMultipleResponse } from 'app/decorator/multiple-response.decorator';
+import { ApiMultipleResponse } from 'app/decorator/multiple-definition.decorator';
 import { ProblemIssueDomain, SubmissionDomain } from 'domains';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import {
