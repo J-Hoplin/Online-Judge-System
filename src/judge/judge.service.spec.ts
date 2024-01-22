@@ -25,6 +25,7 @@ import {
   SubmitProblemDto,
 } from './dto';
 import { SubmissionFilterObject } from './decorator/submission-filter.decorator';
+import { ProblemStatus } from 'app/type';
 
 describe('JudgeService', () => {
   let service: JudgeService;
@@ -147,13 +148,26 @@ describe('JudgeService', () => {
     });
 
     describe('readProblem()', () => {
-      it('should read problem', async () => {
+      it('should read problem if not authenticated', async () => {
         // given
         const id = problem1['id'];
         // when
-        const problem = await service.readProblem(id);
+        const problem = await service.readProblem(id, undefined);
         // then
         expect(problem.id).toBe(id);
+      });
+
+      it('should read problem if authenticated', async () => {
+        // given
+        const id = problem1['id'];
+        // when
+        const problem = await service.readProblem(id, {
+          user: user1,
+        });
+        // then
+        expect(problem.id).toBe(id);
+        expect(problem).toHaveProperty('isSuccess');
+        expect(problem['isSuccess']).toBe(ProblemStatus.PENDING);
       });
     });
 

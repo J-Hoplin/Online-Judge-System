@@ -3,6 +3,12 @@ export type JwtPayload = {
   email: string;
 };
 
+export enum ProblemStatus {
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAIL = 'FAIL',
+}
+
 // Common Prisma Enum type
 
 // Convert enum to interface(type)

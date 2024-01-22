@@ -68,6 +68,8 @@ describe('UserService', () => {
     it("should get user's profile", async () => {
       const result = await service.getProfile(user1.id);
       expect(result.id).not.toBeUndefined();
+      expect(result).toBeObject();
+      expect(result).toContainKeys(Object.keys(UserDomain));
     });
     it('should throw if user not found', async () => {
       try {
@@ -128,6 +130,8 @@ describe('UserService', () => {
         null,
       );
       expect(result).not.toBeUndefined();
+      expect(result).toBeObject();
+      expect(result).toContainAllKeys(Object.keys(user1));
     });
 
     it('should throw if password unmatched', async () => {

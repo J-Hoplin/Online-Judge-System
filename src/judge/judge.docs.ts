@@ -47,7 +47,10 @@ export class JudgeDocs {
 
   public static ReadProblem() {
     return applyDecorators(
-      ApiOperation({ summary: '문제 반환' }),
+      ApiOperation({
+        summary:
+          '문제 반환. 비로그인 사용 가능 API. 비로그인 사용하는 경우에는 `isSuccess` 필드가 없습니다. Enum은 Response Schema 참고바랍니다.',
+      }),
       ApiOkResponse({
         type: ReadProblemResponse,
       }),

@@ -8,7 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { LocalGuard } from 'app/auth/guard';
@@ -63,8 +63,11 @@ export class JudgeController {
   @AllowPublic()
   @UseGuards(ProblemGuard)
   @JudgeDocs.ReadProblem()
-  readProblem(@Param('pid', ParseIntPipe) pid: number) {
-    return this.judgeService.readProblem(pid);
+  readProblem(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Request() req: Request,
+  ) {
+    return this.judgeService.readProblem(pid, req);
   }
 
   @Post('/:pid/run')
