@@ -43,6 +43,8 @@ describe('JudgeService', () => {
   // Closed Problem
   let problem2: ProblemDomain;
 
+  let problem3: ProblemDomain;
+
   let openSubmission: SubmissionDomain;
   let closedSubmission: SubmissionDomain;
 
@@ -94,10 +96,19 @@ describe('JudgeService', () => {
 
     problem2 = await prisma.problem.create({
       data: {
-        title: 'No Problem',
+        title: 'No Example',
         contributerId: user1.id,
         tags: [],
         isOpen: true,
+      },
+    });
+
+    problem3 = await prisma.problem.create({
+      data: {
+        title: 'Closed Problem',
+        contributerId: user1.id,
+        tags: [],
+        isOpen: false,
       },
     });
   });
@@ -120,7 +131,7 @@ describe('JudgeService', () => {
     });
 
     describe('listProblem()', () => {
-      it('should list problem', async () => {
+      it('should read problem if not authenticated', async () => {
         //given
         const filter: JudgeFilterObject = {
           Orderby: {},
@@ -135,8 +146,52 @@ describe('JudgeService', () => {
           take: 10,
         };
         //when
-        const problems = await service.listProblem(filter, paginate);
+        const problems = await service.listProblem(filter, paginate, {});
         // Then
+        expect(problems[0]).not.toHaveProperty('isSuccess');
+        expect(problems).toEqual(
+          expect.arrayContaining([
+            expect.not.objectContaining({
+              id: problem3.id,
+            }),
+          ]),
+        );
+        expect(problems).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id: problem1.id,
+            }),
+          ]),
+        );
+      });
+
+      it('should read problem if authenticated', async () => {
+        //given
+        const filter: JudgeFilterObject = {
+          Orderby: {},
+          Where: {
+            title: {
+              contains: 'Have',
+            },
+          },
+        };
+        const paginate: PaginateObject = {
+          skip: 0,
+          take: 10,
+        };
+        //when
+        const problems = await service.listProblem(filter, paginate, {
+          user: user1,
+        });
+        // Then
+        expect(problems[0]).toHaveProperty('isSuccess');
+        expect(problems).toEqual(
+          expect.arrayContaining([
+            expect.not.objectContaining({
+              id: problem3.id,
+            }),
+          ]),
+        );
         expect(problems).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -148,13 +203,14 @@ describe('JudgeService', () => {
     });
 
     describe('readProblem()', () => {
-      it('should read problem if not authenticated', async () => {
+      it('should allow not authenticated', async () => {
         // given
         const id = problem1['id'];
         // when
         const problem = await service.readProblem(id, undefined);
         // then
         expect(problem.id).toBe(id);
+        expect(problem).not.toHaveProperty('isSuccess');
       });
 
       it('should read problem if authenticated', async () => {
@@ -167,7 +223,6 @@ describe('JudgeService', () => {
         // then
         expect(problem.id).toBe(id);
         expect(problem).toHaveProperty('isSuccess');
-        expect(problem['isSuccess']).toBe(ProblemStatus.PENDING);
       });
     });
 

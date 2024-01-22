@@ -42,6 +42,7 @@ export class JudgeDocs {
     return applyDecorators(
       ApiOperation({ summary: '문제 리스트 출력' }),
       ApiOkResponse({ type: ListProblemResponse, isArray: true }),
+      ...PaginationDocs,
     );
   }
 

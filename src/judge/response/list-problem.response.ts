@@ -1,4 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ProblemStatus } from 'app/type';
 import { ProblemDomain, UserDomain } from 'domains';
 
 export class ListProblemContributerResponse extends PickType(UserDomain, [
@@ -22,4 +23,9 @@ export class ListProblemResponse extends PickType(ProblemDomain, [
 
   @ApiProperty()
   correctionRate: number;
+
+  @ApiProperty({
+    enum: ProblemStatus,
+  })
+  isSuccess: ProblemStatus;
 }

@@ -55,8 +55,9 @@ export class JudgeController {
   listProblem(
     @JudgeFilter() filter: JudgeFilterObject,
     @Pagination() paginate: PaginateObject,
+    @Request() req: Request,
   ) {
-    return this.judgeService.listProblem(filter, paginate);
+    return this.judgeService.listProblem(filter, paginate, req);
   }
 
   @Get('/:pid')
