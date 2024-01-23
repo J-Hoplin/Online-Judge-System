@@ -61,6 +61,9 @@ jobs:
           severity: error
           details: 'Unit Test Result: Fail'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.unit-test-phase.outcome != 'success'
+        run: exit1
 
   e2e-testing:
     needs: unit-testing
@@ -109,3 +112,6 @@ jobs:
           severity: error
           details: 'E2E Test Result: Failed'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.e2e-test-phase.outcome != 'success'
+        run: exit1

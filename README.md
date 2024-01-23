@@ -11,6 +11,7 @@
 - [📊Test Coverage](#test-coverage)
 - [🧰Technical Stack](#technical-stack)
 - [✅Run Application](#run-application)
+- [🐳Run Application With Docker](#run-application-with-docker)
 - [📄Run E2E Test](#run-e2e-test)
 - [📄Run Unit Test](#run-unit-test)
 - [📝TODO](#todo)
@@ -101,6 +102,26 @@
 
    ```
    yarn dev
+   ```
+
+## Run Application with docker
+
+1. Build docker image
+
+   ```
+   docker build -t online-judge .
+   ```
+
+2. Run with docker enviornment
+
+   ```
+   yarn docker:up
+   ```
+
+3. Remove docker environment
+
+   ```
+   yarn docker:down
    ```
 
 ## Run E2E Test
