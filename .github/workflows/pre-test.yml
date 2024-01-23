@@ -165,17 +165,14 @@ jobs:
         with:
           name: build-result
           path: .
-
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
-      - name: Directory Check
-        run: ls -al
       - name: Install dotenv-cli for CI script
         run: npm install -g dotenv-cli
       - id: tear-down-phase
         name: Test Database tear-down
         continue-on-error: true
-        run: npm run ci:tearDown
+        run: node node_modules/prisma/build/index.js db push --force-reset
       - name: 'Discord Alert - Success'
         if: steps.tear-down-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
