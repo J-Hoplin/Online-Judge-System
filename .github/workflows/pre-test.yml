@@ -87,9 +87,7 @@ jobs:
         with:
           name: build-result
           path: .
-      - name: print-directory
-        run: ls -al
-      - name: Grant Permission in recursive
+      - name: Grant Permission to artifacts
         run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
         run: npm install -g dotenv-cli
@@ -128,6 +126,8 @@ jobs:
         with:
           name: build-result
           path: .
+      - name: Grant Permission to artifacts
+        run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
         run: npm install -g dotenv-cli
       - id: e2e-test-phase
@@ -165,6 +165,8 @@ jobs:
         with:
           name: build-result
           path: .
+      - name: Grant Permission to artifacts
+        run: chmod -R 777 .
       - id: tear-down-phase
         name: Test Database tear-down
         continue-on-error: true
