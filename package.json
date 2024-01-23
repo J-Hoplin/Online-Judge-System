@@ -23,6 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "ci:init": "dotenv -e .ci.env -- npx prisma db push",
+    "ci:tearDown": "dotenv -e .ci.env -- npx prisma db push --force-reset",
     "ci:unit": "dotenv -e .ci.env -- jest --setupFiles jest --config ./test/jest-unit.json --runInBand",
     "ci:e2e": "dotenv -e .ci.env -- jest --config ./test/jest-e2e.json --runInBand",
     "test:init": "dotenv -e .test.env -- npx prisma db push",

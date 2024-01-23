@@ -79,13 +79,13 @@ export class PrismaService
   }
 
   async deleteAll() {
-    await this.$transaction([
-      this.submission.deleteMany(),
-      this.problemIssueComment.deleteMany(),
-      this.problemIssue.deleteMany(),
-      this.problemExample.deleteMany(),
-      this.problem.deleteMany(),
-      this.user.deleteMany(),
-    ]);
+    // await this.$transaction([
+    //   this.submission.deleteMany(),
+    //   this.problemIssueComment.deleteMany(),
+    //   this.problemIssue.deleteMany(),
+    //   this.problemExample.deleteMany(),
+    //   this.problem.deleteMany(),
+    //   this.user.deleteMany(),
+    // ]);
   }
 }
