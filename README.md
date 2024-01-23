@@ -7,7 +7,8 @@
 
 ## Contents
 
-- [🔖Diagram](#diagram)
+- [📦Diagram](#diagram)
+- [📦Github Actions CI flow](#github-actions-ci-flow)
 - [📊Test Coverage](#test-coverage)
 - [🧰Technical Stack](#technical-stack)
 - [✅Run Application](#run-application)
@@ -19,6 +20,10 @@
 ## Diagram
 
 ![](img/diagram.png)
+
+## Github Actions CI flow
+
+![](img/github-action-flow.png)
 
 ## Frontend Repository
 
