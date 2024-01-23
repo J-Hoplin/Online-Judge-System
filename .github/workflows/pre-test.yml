@@ -54,9 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-result
-          path: |
-            ${{ github.workspace }}
-            !.git/
+          path: .
       - name: 'Discord Alert - Success'
         if: steps.build-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
@@ -89,6 +87,10 @@ jobs:
         with:
           name: build-result
           path: .
+      - name: print-directory
+        run: ls -al
+      - name: Grant Permission in recursive
+        run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
         run: npm install -g dotenv-cli
       - id: unit-test-phase
