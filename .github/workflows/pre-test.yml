@@ -40,6 +40,8 @@ jobs:
           echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
         run: npm install --force
+      - name: Install dotenv-cli for CI script
+        run: npm install -g dotenv-cli
       - id: build-phase
         name: Check Nest.js Application Build
         continue-on-error: true
