@@ -54,7 +54,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-result
-          path: .
+          path: |
+            ${{ github.workspace }}
+            !.git/
       - name: 'Discord Alert - Success'
         if: steps.build-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
