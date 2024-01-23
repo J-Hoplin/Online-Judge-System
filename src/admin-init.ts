@@ -21,15 +21,16 @@ export async function InitializeAdmin(app: INestApplication) {
     });
     if (!findAdmin) {
       // Initialize root admin
-      await prisma.user.create({
-        data: {
-          nickname: 'admin',
-          password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
-          email: process.env.ADMIN_EMAIL,
-          type: 'Admin',
-        },
-      });
-      logger.log('Admin initialized');
+      await prisma.$transaction([
+        prisma.user.create({
+          data: {
+            nickname: 'admin',
+            password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
+            email: process.env.ADMIN_EMAIL,
+            type: 'Admin',
+          },
+        }),
+      ]);
     } else {
       logger.log('Admin already initialized');
     }
