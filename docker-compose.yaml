@@ -5,15 +5,29 @@ services:
     ports:
       - '3306:3306'
     restart: 'unless-stopped'
-    # volumes:
-    #   - system-db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=hoplin1234!
       - MYSQL_ROOT_HOST=%
       - MYSQL_DATABASE=judge
+    networks:
+      - system
+  api:
+    image: online-judge
+    ports:
+      - '3000:3000'
+    restart: 'unless-stopped'
+    env_file:
+      - ./.docker.env
+    depends_on:
+      - db
+    networks:
+      - system
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - system
 networks:
   system:
     driver: bridge
-# volumes:
-#   system-db:
-#     external: false
