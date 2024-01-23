@@ -172,7 +172,7 @@ jobs:
       - id: tear-down-phase
         name: Test Database tear-down
         continue-on-error: true
-        run: node node_modules/prisma/build/index.js db push --force-reset
+        run: dotenv -e .ci.env -- node node_modules/prisma/build/index.js db push --force-reset
       - name: 'Discord Alert - Success'
         if: steps.tear-down-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
