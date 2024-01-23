@@ -60,14 +60,14 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
-          details: 'Unit Test Result: Success'
+          details: 'Build & Setup: Success'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Discord Alert - Failed'
         if: steps.build-phase.outcome != 'success'
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
-          details: 'Unit Test Result: Fail'
+          details: 'Build & Setup: Fail'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Fail check'
         if: steps.build-phase.outcome != 'success'
@@ -165,8 +165,11 @@ jobs:
         with:
           name: build-result
           path: .
+
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
+      - name: Directory Check
+        run: ls -al
       - name: Install dotenv-cli for CI script
         run: npm install -g dotenv-cli
       - id: tear-down-phase
@@ -178,12 +181,12 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
-          details: 'E2E Test Result: Success'
+          details: 'Test DB Tear down: Success'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Discord Alert - Fail'
         if: steps.tear-down-phase.outcome != 'success'
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: error
-          details: 'E2E Test Result: Failed'
+          details: 'Test DB Tear down: Failed'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
