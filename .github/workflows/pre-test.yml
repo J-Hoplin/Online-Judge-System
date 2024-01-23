@@ -167,6 +167,8 @@ jobs:
           path: .
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
+      - name: Install dotenv-cli for CI script
+        run: npm install -g dotenv-cli
       - id: tear-down-phase
         name: Test Database tear-down
         continue-on-error: true
