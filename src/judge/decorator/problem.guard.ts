@@ -22,12 +22,12 @@ export class ProblemGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const problemId = request.params['pid'];
-
     // Check if problem in DB
     try {
       await this.prisma.problem.findUniqueOrThrow({
         where: {
           id: parseInt(problemId),
+          isOpen: true,
         },
       });
       return true;

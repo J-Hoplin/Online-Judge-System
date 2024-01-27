@@ -8,10 +8,16 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { LocalGuard } from 'app/auth/guard';
-import { GetUser, PaginateObject, Pagination } from 'app/decorator';
+import {
+  AllowPublic,
+  GetUser,
+  PaginateObject,
+  Pagination,
+} from 'app/decorator';
 import {
   JudgeFilter,
   JudgeFilterObject,
@@ -44,19 +50,25 @@ export class JudgeController {
   }
 
   @Get('/')
+  @AllowPublic()
   @JudgeDocs.ListProblem()
   listProblem(
     @JudgeFilter() filter: JudgeFilterObject,
     @Pagination() paginate: PaginateObject,
+    @Request() req: Request,
   ) {
-    return this.judgeService.listProblem(filter, paginate);
+    return this.judgeService.listProblem(filter, paginate, req);
   }
 
   @Get('/:pid')
+  @AllowPublic()
   @UseGuards(ProblemGuard)
   @JudgeDocs.ReadProblem()
-  readProblem(@Param('pid', ParseIntPipe) pid: number) {
-    return this.judgeService.readProblem(pid);
+  readProblem(
+    @Param('pid', ParseIntPipe) pid: number,
+    @Request() req: Request,
+  ) {
+    return this.judgeService.readProblem(pid, req);
   }
 
   @Post('/:pid/run')

@@ -12,19 +12,20 @@ datasource db {
 }
 
 model User {
-  id         String         @id @default(uuid())
-  nickname   String         @unique
-  password   String
-  email      String         @unique
-  message    String?
-  github     String?
-  blog       String?
-  type       UserType?      @default(User)
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  problems   Problem[]
-  Submission Submission[]
-  Issues     ProblemIssue[]
+  id            String                @id @default(uuid())
+  nickname      String                @unique
+  password      String
+  email         String                @unique
+  message       String?
+  github        String?
+  blog          String?
+  profileImage  String?
+  type          UserType?             @default(User)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  problems      Problem[]
+  Submission    Submission[]
+  Issues        ProblemIssue[]
   IssueComments ProblemIssueComment[]
 
   @@map("user")
@@ -53,10 +54,11 @@ model Problem {
   examples ProblemExample[]
   tags     Json
 
+  isOpen     Boolean   @default(false)
   isArchived Boolean   @default(false)
   deletedAt  DateTime?
 
-  issues ProblemIssue[]
+  issues   ProblemIssue[]
   comments ProblemIssueComment[]
 
   createdAt DateTime @default(now())
@@ -120,15 +122,15 @@ model Submission {
 }
 
 model ProblemIssue {
-  id      Int    @id @default(autoincrement())
-  title   String @db.VarChar(100) @default("Title Here")
-  content String @db.Text
+  id        Int     @id @default(autoincrement())
+  title     String  @default("Title Here") @db.VarChar(100)
+  content   String  @db.Text
   // 1:N relation with Problem
   problemId Int
   problem   Problem @relation(references: [id], fields: [problemId], onDelete: Cascade)
   // 1:N relation with User
-  issuerId String
-  issuer   User   @relation(references: [id], fields: [issuerId], onDelete: Cascade)
+  issuerId  String
+  issuer    User    @relation(references: [id], fields: [issuerId], onDelete: Cascade)
 
   comments ProblemIssueComment[]
 
@@ -136,17 +138,17 @@ model ProblemIssue {
 }
 
 model ProblemIssueComment {
-  id  Int @id  @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   content String @db.Text
 
   issueId Int
   issue   ProblemIssue @relation(fields: [issueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  userId  String
-  user  User @relation(fields: [userId],references: [id],onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   problemId Int
-  problem Problem @relation(references: [id],fields: [problemId])
+  problem   Problem @relation(references: [id], fields: [problemId])
 
   @@map("problem_issue_comment")
 }

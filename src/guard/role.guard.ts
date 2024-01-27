@@ -14,6 +14,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
+  // Throws Forbidden(403)
   constructor(private reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
     const roleList = this.reflector.getAllAndOverride(Role, [

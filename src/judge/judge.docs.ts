@@ -1,4 +1,4 @@
-import { applyDecorators } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -10,6 +10,7 @@ import {
 } from '@nestjs/swagger';
 
 import { PaginationDocs } from 'app/decorator';
+import { ApiMultipleResponse } from 'app/decorator/multiple-definition.decorator';
 import { ProblemIssueDomain, SubmissionDomain } from 'domains';
 import { SubmissionFilterDocs } from './decorator/submission-filter.decorator';
 import {
@@ -17,10 +18,12 @@ import {
   DeleteProblemIssueCommentResponse,
   DeleteProblemIssueResponse,
   GetLanguagesResponse,
+  ListProblemAuthenticatedResponse,
   ListProblemIssueResponse,
-  ListProblemResponse,
+  ListProblemUnAuthenticatedResponse,
   ListUserSubmissionRepsonse,
-  ReadProblemResponse,
+  ReadProblemAuthenticatedResponse,
+  ReadProblemUnauthenticatedResponse,
   ReadPublicSubmissionResponse,
   RunProblemResponse,
   SubmitProblemResponse,
@@ -41,16 +44,109 @@ export class JudgeDocs {
   public static ListProblem() {
     return applyDecorators(
       ApiOperation({ summary: '문제 리스트 출력' }),
-      ApiOkResponse({ type: ListProblemResponse, isArray: true }),
+      ApiMultipleResponse(HttpStatus.OK, {
+        Authenticated: {
+          classRef: ListProblemUnAuthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            contributer: {
+              nickname: 'admin',
+            },
+            correct: 1,
+            total: 1,
+            correctionRate: '1.000',
+            status: 'SUCCESS',
+          },
+          isArray: true,
+          description: 'If authenticated response',
+        },
+        UnAuthenticated: {
+          classRef: ListProblemAuthenticatedResponse,
+          example: {
+            id: 10,
+            title: 'string',
+            contributer: {
+              nickname: 'admin',
+            },
+            correct: 0,
+            total: 1,
+            correctionRate: '0.000',
+          },
+          isArray: true,
+          description: 'If Unauthenticated Response',
+        },
+      }),
+      ...PaginationDocs,
     );
   }
 
   public static ReadProblem() {
     return applyDecorators(
-      ApiOperation({ summary: '문제 반환' }),
-      ApiOkResponse({
-        type: ReadProblemResponse,
+      ApiOperation({
+        summary:
+          '문제 반환. 비로그인 사용 가능 API. 비로그인 사용하는 경우에는 `isSuccess` 필드가 없습니다. Enum은 Response Schema 참고바랍니다.',
       }),
+      ApiMultipleResponse(HttpStatus.OK, {
+        Authenticated: {
+          classRef: ReadProblemAuthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            problem: 'Problem Here',
+            input: 'Input Here',
+            output: 'Output Here',
+            timeLimit: 5,
+            memoryLimit: 128,
+            contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+            tags: [],
+            isOpen: true,
+            isArchived: false,
+            deletedAt: null,
+            createdAt: '2024-01-16T14:12:07.748Z',
+            updatedAt: '2024-01-16T14:12:39.185Z',
+            examples: [
+              {
+                id: 6,
+                input: '',
+                output: 'hello world',
+                isPublic: true,
+                problemId: 11,
+              },
+            ],
+            isSuccess: 'SUCCESS',
+          },
+        },
+        UnAuthenticated: {
+          classRef: ReadProblemUnauthenticatedResponse,
+          example: {
+            id: 11,
+            title: 'New Problem',
+            problem: 'Problem Here',
+            input: 'Input Here',
+            output: 'Output Here',
+            timeLimit: 5,
+            memoryLimit: 128,
+            contributerId: '97f16592-93a3-4bba-9bc5-08f55c860bd4',
+            tags: [],
+            isOpen: true,
+            isArchived: false,
+            deletedAt: null,
+            createdAt: '2024-01-16T14:12:07.748Z',
+            updatedAt: '2024-01-16T14:12:39.185Z',
+            examples: [
+              {
+                id: 6,
+                input: '',
+                output: 'hello world',
+                isPublic: true,
+                problemId: 11,
+              },
+            ],
+          },
+        },
+      }),
+
       ApiNotFoundResponse({ description: ['PROBLEM_NOT_FOUND'].join(', ') }),
     );
   }

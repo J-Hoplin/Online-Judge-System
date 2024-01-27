@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { InitializeAdmin } from 'app/admin-init';
 import { AppModule } from 'app/app.module';
 import { PrismaService } from 'app/prisma/prisma.service';
+import { Judge0Service } from 'judge/judge0';
 import * as request from 'supertest';
 import { userSignupGen } from 'test/mock-generator';
+import { JudgeLibraryMockProvider } from 'test/mock.provider';
 import { BearerTokenHeader } from 'test/test-utils';
 
 describe('/judge Judge Controller', () => {
@@ -27,7 +29,10 @@ describe('/judge Judge Controller', () => {
   beforeAll(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(Judge0Service)
+      .useValue(JudgeLibraryMockProvider.useValue)
+      .compile();
 
     app = testModule.createNestApplication();
     prisma = testModule.get<PrismaService>(PrismaService);
@@ -82,6 +87,16 @@ describe('/judge Judge Controller', () => {
       problemId = newProblem.body['id'];
     });
 
+    it('should set problem public', async () => {
+      return request(app.getHttpServer())
+        .patch(`/judge/contribute/problems/${problemId}`)
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .send({
+          isOpen: true,
+        })
+        .expect(200);
+    });
+
     it('should generate problme example', async () => {
       const example = await request(app.getHttpServer())
         .post(`/judge/contribute/problems/${problemId}/examples`)
@@ -106,7 +121,7 @@ describe('/judge Judge Controller', () => {
   // Test
   describe('/languages GET', () => {
     it('should throw if unauthenticated', async () => {
-      return request(app.getHttpServer()).get('/judge').expect(401);
+      return request(app.getHttpServer()).get('/judge/languages').expect(401);
     });
     it('should get language list', async () => {
       return request(app.getHttpServer())
@@ -117,8 +132,8 @@ describe('/judge Judge Controller', () => {
   });
 
   describe('/ GET', () => {
-    it('should throw if unauthenticated', async () => {
-      return request(app.getHttpServer()).get('/judge').expect(401);
+    it('should allow unauthenticated', async () => {
+      return request(app.getHttpServer()).get('/judge').expect(200);
     });
     it('should get problem list', async () => {
       return request(app.getHttpServer())
@@ -129,10 +144,10 @@ describe('/judge Judge Controller', () => {
   });
 
   describe('/:pid GET', () => {
-    it('should throw if unauthenticated', async () => {
+    it('should allow unauthenticated', async () => {
       return request(app.getHttpServer())
         .get(`/judge/${problemId}`)
-        .expect(401);
+        .expect(200);
     });
     it('should get problem info', async () => {
       return request(app.getHttpServer())
