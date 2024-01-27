@@ -1,10 +1,8 @@
-name: Pull-Request-Pretest
+name: CI-Pull-Request-Pretest
 on:
   pull_request:
     branches:
       - dev
-    paths:
-      - '**.ts'
 run-name: Unit/E2E test of ${{ github.ref_name }} by ${{ github.actor }}
 jobs:
   build:
@@ -19,6 +17,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: yarn
       - name: Initialize .ci.env
         run: |
           touch .ci.env
@@ -33,16 +32,16 @@ jobs:
           echo "AWS_SQS_QUEUE=${{secrets.AWS_SQS_QUEUE}}" >> .ci.env
           echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
-        run: npm install --force
+        run: yarn install --force
       - name: Install dotenv-cli for CI script
-        run: npm install -g dotenv-cli
+        run: yarn global add dotenv-cli
       - id: build-phase
         name: Check Nest.js Application Build
         continue-on-error: true
         run: yarn build
       # Push Prisma Schema to test DB
       - name: Initialize Prisma Client
-        run: npm run ci:init
+        run: yarn ci:init
       # Preserve Artifacts for test
       - name: Preserve Artifacts
         uses: actions/upload-artifact@v4
@@ -84,11 +83,11 @@ jobs:
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
-        run: npm install -g dotenv-cli
+        run: yarn global add dotenv-cli
       - id: unit-test-phase
         name: Run Unit Test
         continue-on-error: true
-        run: npm run ci:unit
+        run: yarn ci:unit
       - name: 'Discord Alert - Success'
         if: steps.unit-test-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
@@ -123,11 +122,11 @@ jobs:
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
-        run: npm install -g dotenv-cli
+        run: yarn global add dotenv-cli
       - id: e2e-test-phase
         name: Run E2E Test
         continue-on-error: true
-        run: npm run ci:e2e
+        run: yarn ci:e2e
       - name: 'Discord Alert - Success'
         if: steps.e2e-test-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
@@ -162,11 +161,15 @@ jobs:
       - name: Grant Permission to artifacts
         run: chmod -R 777 .
       - name: Install dotenv-cli for CI script
-        run: npm install -g dotenv-cli
+        run: yarn global add dotenv-cli
       - id: tear-down-phase
         name: Test Database tear-down
         continue-on-error: true
         run: dotenv -e .ci.env -- node node_modules/prisma/build/index.js db push --force-reset
+      - uses: geekyeggo/delete-artifact@v4
+        with:
+          name: build-result
+          token: ${{secrets.TOKEN}}
       - name: 'Discord Alert - Success'
         if: steps.tear-down-phase.outcome == 'success'
         uses: rjstone/discord-webhook-notify@v1
@@ -181,3 +184,6 @@ jobs:
           severity: error
           details: 'Test DB Tear down: Failed'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.tear-down-phase.outcome != 'success'
+        run: exit1
