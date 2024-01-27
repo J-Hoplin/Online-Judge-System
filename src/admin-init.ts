@@ -2,6 +2,7 @@ import { INestApplication, LoggerService } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { SystemLoggerService } from './system-logger/system-logger.service';
 import * as bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
 
 export async function InitializeAdmin(app: INestApplication) {
   // Generate default admin account
@@ -14,25 +15,21 @@ export async function InitializeAdmin(app: INestApplication) {
     );
     throw new Error('Fail to initialize server');
   } else {
-    const findAdmin = await prisma.user.findUnique({
-      where: {
-        email: process.env.ADMIN_EMAIL,
-      },
+    // Initialize root admin
+    await prisma.$transaction(async (tx: PrismaClient) => {
+      await tx.user.upsert({
+        where: {
+          email: process.env.ADMIN_EMAIL,
+        },
+        create: {
+          nickname: 'admin',
+          password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
+          email: process.env.ADMIN_EMAIL,
+          type: 'Admin',
+        },
+        update: {},
+      });
+      logger.log('Admin Initialized');
     });
-    if (!findAdmin) {
-      // Initialize root admin
-      await prisma.$transaction([
-        prisma.user.create({
-          data: {
-            nickname: 'admin',
-            password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
-            email: process.env.ADMIN_EMAIL,
-            type: 'Admin',
-          },
-        }),
-      ]);
-    } else {
-      logger.log('Admin already initialized');
-    }
   }
 }
