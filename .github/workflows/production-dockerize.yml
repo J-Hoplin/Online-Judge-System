@@ -34,6 +34,7 @@ jobs:
       - id: build-n-push
         name: Build and Push
         uses: docker/build-push-action@v5
+        continue-on-error: true
         with:
           context: .
           push: true
@@ -44,7 +45,7 @@ jobs:
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
-          details: 'Docker Deploy Success (linux/amd64, linux/arm64)'
+          details: 'Docker Deploy Success - Architecture: linux/amd64, linux/arm64'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: 'Discord Alert - Fail'
         if: steps.build-n-push.outcome != 'success'

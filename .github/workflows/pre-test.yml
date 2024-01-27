@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - dev
+      - production
 run-name: Unit/E2E test of ${{ github.ref_name }} by ${{ github.actor }}
 jobs:
   build:
