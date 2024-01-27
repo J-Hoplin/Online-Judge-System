@@ -25,6 +25,7 @@ jobs:
           echo "ADMIN_EMAIL=${{secrets.ADMIN_EMAIL}}" >> .ci.env
           echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
+          echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
       - name: Install Node.js Dependencies
         run: yarn install --force
       - name: Install dotenv-cli for CI script
