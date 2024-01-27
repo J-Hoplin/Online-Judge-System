@@ -166,7 +166,7 @@ jobs:
         name: Test Database tear-down
         continue-on-error: true
         run: dotenv -e .ci.env -- node node_modules/prisma/build/index.js db push --force-reset
-      - uses: geekyeggo/delete-artifact@v4
+      - uses: geekyeggo/delete-artifact@v4.1.0
         with:
           name: build-result
       - name: 'Discord Alert - Success'
