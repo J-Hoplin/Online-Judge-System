@@ -26,6 +26,11 @@ jobs:
           echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
           echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
+          echo "AWS_REGION"=${{secrets.AWS_REGION}}>> .ci.env
+          echo "AWS_ACCESS_ID=${{secrets.AWS_ACCESS_ID}}" >> .ci.env
+          echo "AWS_ACCESS_SECRET=${{secrets.AWS_ACCESS_SECRET}}" >> .ci.env
+          echo "AWS_SQS_QUEUE=${{secrets.AWS_SQS_QUEUE}}" >> .ci.env
+          echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
         run: yarn install --force
       - name: Install dotenv-cli for CI script
@@ -178,3 +183,6 @@ jobs:
           severity: error
           details: 'Test DB Tear down: Failed'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.tear-down-phase.outcome != 'success'
+        run: exit1

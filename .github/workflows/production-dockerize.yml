@@ -31,10 +31,28 @@ jobs:
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
-      - name: Build and Push
+      - id: build-n-push
+        name: Build and Push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: hoplin-dev/online-judge:latest
           platforms: linux/amd64,linux/arm64
+      - name: 'Discord Alert - Success'
+        if: steps.build-n-push.outcome == 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: 'Docker Deploy Success (linux/amd64, linux/arm64)'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Discord Alert - Fail'
+        if: steps.build-n-push.outcome != 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: 'Docker Deploy Failed'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.build-n-push.outcome != 'success'
+        run: exit1
