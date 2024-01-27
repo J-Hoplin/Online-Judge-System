@@ -16,20 +16,25 @@ export async function InitializeAdmin(app: INestApplication) {
     throw new Error('Fail to initialize server');
   } else {
     // Initialize root admin
-    await prisma.$transaction(async (tx: PrismaClient) => {
-      await tx.user.upsert({
-        where: {
-          email: process.env.ADMIN_EMAIL,
-        },
-        create: {
-          nickname: 'admin',
-          password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
-          email: process.env.ADMIN_EMAIL,
-          type: 'Admin',
-        },
-        update: {},
+    try {
+      await prisma.$transaction(async (tx: PrismaClient) => {
+        await tx.user.upsert({
+          where: {
+            email: process.env.ADMIN_EMAIL,
+          },
+          create: {
+            nickname: 'admin',
+            password: bcrypt.hashSync(process.env.ADMIN_PW, 10),
+            email: process.env.ADMIN_EMAIL,
+            type: 'Admin',
+          },
+          update: {},
+        });
+        logger.log('Admin Initialized');
       });
-      logger.log('Admin Initialized');
-    });
+    } catch (err) {
+    } finally {
+      return true;
+    }
   }
 }
