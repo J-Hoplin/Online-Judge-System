@@ -4,6 +4,8 @@ on:
     branches:
       - dev
       - production
+    paths:
+      - '**.ts'
 run-name: Unit/E2E test of ${{ github.ref_name }} by ${{ github.actor }}
 jobs:
   build:
