@@ -40,9 +40,9 @@ enum UserType {
 model Problem {
   id            Int    @id @default(autoincrement())
   title         String @default("New Problem") // 제목
-  problem       String @default("Problem Here") // 문제
-  input         String @default("Input Here") // 입력
-  output        String @default("Output Here") // 출력
+  problem       String @db.LongText // 문제
+  input         String @db.LongText // 입력
+  output        String @db.LongText // 출력
   timeLimit     Int    @default(5) // 시간제한(Second)
   memoryLimit   Int    @default(128) // 메모리제한(MB)
   // 1:N relation with User
