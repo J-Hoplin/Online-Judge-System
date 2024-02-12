@@ -69,8 +69,8 @@ model Problem {
 
 model ProblemExample {
   id       Int     @id @default(autoincrement())
-  input    String  @default("")
-  output   String  @default("")
+  input    String  @db.LongText
+  output   String  @db.LongText
   isPublic Boolean @default(true) // If it's public example
 
   // 1:N relation with Problem

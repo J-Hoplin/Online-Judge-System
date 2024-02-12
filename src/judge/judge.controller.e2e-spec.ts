@@ -100,7 +100,8 @@ describe('/judge Judge Controller', () => {
     it('should generate problme example', async () => {
       const example = await request(app.getHttpServer())
         .post(`/judge/contribute/problems/${problemId}/examples`)
-        .set('Authorization', BearerTokenHeader(adminToken));
+        .set('Authorization', BearerTokenHeader(adminToken))
+        .send({ input: 'Example', output: 'Output', isPublic: true });
       expect(example.statusCode).toBe(201);
       exampleId = example.body['id'];
     });
