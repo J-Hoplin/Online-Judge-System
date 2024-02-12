@@ -80,6 +80,9 @@ describe('JudgeService', () => {
     problem1 = await prisma.problem.create({
       data: {
         title: 'Have Example',
+        problem: '',
+        input: '',
+        output: '',
         contributerId: user1.id,
         tags: [],
         isOpen: true,
@@ -97,6 +100,9 @@ describe('JudgeService', () => {
     problem2 = await prisma.problem.create({
       data: {
         title: 'No Example',
+        problem: '',
+        input: '',
+        output: '',
         contributerId: user1.id,
         tags: [],
         isOpen: true,
@@ -106,6 +112,9 @@ describe('JudgeService', () => {
     problem3 = await prisma.problem.create({
       data: {
         title: 'Closed Problem',
+        problem: '',
+        input: '',
+        output: '',
         contributerId: user1.id,
         tags: [],
         isOpen: false,
