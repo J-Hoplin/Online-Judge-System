@@ -149,13 +149,13 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
 To use Rabbit MQ worker, you need to set both `TYPE` and `QUEUE_TYPE` as `webserver` and `RMQ` each. **This is fundamental setting to use Rabbit MQ worker setting.**
 
 ```
-TYPE="webserver"
+TYPE="worker"
 
 ...
 
 
 QUEUE_TYPE="RMQ"
-RMQ_URL="amqp://root:password@localhost:5672"
+RMQ_URL="amqp://root:password@rmq:5672"
 RMQ_WORKER_QUEUE_NAME="JUDGE_QUEUE"
 
 ...
