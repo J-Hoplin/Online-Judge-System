@@ -1,12 +1,13 @@
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContributerService } from './contributer.service';
 import { PrismaModule } from 'app/prisma/prisma.module';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { ProblemDomain, ProblemExampleDomain, UserDomain } from 'domains';
+import { QueueModule } from 'queue/queue';
+import { QueueService } from 'queue/queue/strategy';
 import { userSignupGen } from 'test/mock-generator';
-import { ForbiddenException } from '@nestjs/common';
-import { AwsSqsModule, AwsSqsService } from 'aws-sqs/aws-sqs';
-import { AwsSQSLibraryMockProvider } from 'test/mock.provider';
+import { QueueLibraryMockProvider } from 'test/mock.provider';
+import { ContributerService } from './contributer.service';
 
 describe('ContributerService', () => {
   let service: ContributerService;
@@ -25,11 +26,11 @@ describe('ContributerService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule, AwsSqsModule],
+      imports: [PrismaModule, QueueModule],
       providers: [ContributerService],
     })
-      .overrideProvider(AwsSqsService)
-      .useValue(AwsSQSLibraryMockProvider.useValue)
+      .overrideProvider(QueueService)
+      .useValue(QueueLibraryMockProvider.useValue)
       .compile();
 
     // Initialize module for prisma service

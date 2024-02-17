@@ -1,18 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AwsSqsService } from 'aws-sqs/aws-sqs';
+
 import { QueueService } from './strategy/queue-strategy.abstract.service';
 import { RabbitMQService } from './strategy/rmq.service';
+import { AwsSqsQueueService } from './strategy';
 
 @Module({
   providers: [
-    AwsSqsService,
+    AwsSqsQueueService,
     RabbitMQService,
     {
       useClass:
-        process.env.QUEUE_TYPE === 'AWS' ? AwsSqsService : RabbitMQService,
+        process.env.QUEUE_TYPE === 'AWS' ? AwsSqsQueueService : RabbitMQService,
       provide: QueueService,
     },
   ],
-  exports: [QueueService, AwsSqsService, RabbitMQService],
+  exports: [QueueService, AwsSqsQueueService, RabbitMQService],
 })
 export class QueueModule {}

@@ -2,12 +2,15 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PaginateObject } from 'app/decorator';
 import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { PrismaService } from 'app/prisma/prisma.service';
+import { QueueService } from 'queue/queue/strategy';
 import { CreateExampleDto, UpdateExampleDto } from './dto';
-import { AwsSqsService } from 'aws-sqs/aws-sqs';
 
 @Injectable()
 export class ContributerService {
-  constructor(private prisma: PrismaService, private sqs: AwsSqsService) {}
+  constructor(
+    private prisma: PrismaService,
+    private queueService: QueueService,
+  ) {}
 
   async listProblem(uid: string, search: string, pagination: PaginateObject) {
     return this.prisma.problem.findMany({
@@ -126,7 +129,7 @@ export class ContributerService {
       dto.output !== previousExample.output
     ) {
       // Send task to client
-      await this.sqs.sendTask({
+      await this.queueService.sendTask({
         id: pid,
         message: 'RE_CORRECTION',
       });

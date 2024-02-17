@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
-import { WorkerDto } from 'aws-sqs/aws-sqs/dto';
+
 import { ProblemDomain, SubmissionDomain } from 'domains';
 import { Judge0Service } from 'judge/judge0';
+import { WorkerDto } from './dto';
 
 @Injectable()
 export class WorkerService {

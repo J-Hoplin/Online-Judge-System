@@ -1,6 +1,6 @@
 import { ValueProvider } from '@nestjs/common';
-import { AwsSqsService } from 'aws-sqs/aws-sqs';
 import { Judge0Service } from 'judge/judge0';
+import { QueueService } from 'queue/queue/strategy';
 import { AwsS3Service } from 's3/aws-s3';
 
 /**
@@ -52,10 +52,10 @@ export const AwsS3LibraryMockProvider: ValueProvider = {
 };
 
 /**
- * Mock Object of AWS SQS
+ * Mock Object of QueueService
  */
-export const AwsSQSLibraryMockProvider: ValueProvider = {
-  provide: AwsSqsService,
+export const QueueLibraryMockProvider: ValueProvider = {
+  provide: QueueService,
   useValue: {
     sendTask: jest.fn((...args) => true),
   },

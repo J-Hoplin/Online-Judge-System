@@ -1,7 +1,8 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
-import { WorkerDto } from 'aws-sqs/aws-sqs/dto';
+
 import { WorkerService } from './worker.service';
 import { WorkerDocs } from './worker.docs';
+import { WorkerDto } from './dto';
 
 @Controller('worker')
 @WorkerDocs.Controller()
