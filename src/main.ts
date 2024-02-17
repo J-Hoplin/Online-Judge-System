@@ -4,7 +4,6 @@ import { RmqWorkerInit } from './app.worker';
 import { Logger } from '@nestjs/common';
 
 config();
-console.log(process.env.TYPE);
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');

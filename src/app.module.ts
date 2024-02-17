@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SystemLoggerModule } from './system-logger/system-logger.module';
 import { UserModule } from './user/user.module';
 import { WorkerModule } from './worker/worker.module';
+import { QueueModule } from 'queue/queue';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { WorkerModule } from './worker/worker.module';
     JudgeModule,
     WorkerModule,
     ArtifactModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],

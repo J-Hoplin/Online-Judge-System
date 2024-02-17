@@ -40,6 +40,5 @@ export class AwsSqsQueueService extends QueueService {
 
       await this.sqsClient.send(command);
     }
-    return '';
   }
 }
