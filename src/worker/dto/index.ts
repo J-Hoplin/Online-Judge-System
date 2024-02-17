@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { SQSMessageType, SQSTask } from '../type';
+import { QueueTask, SQSMessageType } from 'queue/queue/strategy/type';
 
-export class WorkerDto implements SQSTask {
+export class WorkerDto implements QueueTask {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -10,5 +10,5 @@ export class WorkerDto implements SQSTask {
 
   @ApiProperty()
   @IsNotEmpty()
-  id: string | number;
+  id: number;
 }

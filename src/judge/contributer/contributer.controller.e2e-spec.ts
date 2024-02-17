@@ -6,6 +6,8 @@ import { PrismaService } from 'app/prisma/prisma.service';
 import { userSignupGen } from 'test/mock-generator';
 import * as request from 'supertest';
 import { BearerTokenHeader } from 'test/test-utils';
+import { QueueService } from 'queue/queue/strategy';
+import { QueueLibraryMockProvider } from 'test/mock.provider';
 
 describe('/judge/contributer', () => {
   let app: INestApplication;
@@ -24,7 +26,10 @@ describe('/judge/contributer', () => {
   beforeAll(async () => {
     const testModule: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(QueueService)
+      .useValue(QueueLibraryMockProvider.useValue)
+      .compile();
 
     app = testModule.createNestApplication();
     prisma = testModule.get<PrismaService>(PrismaService);

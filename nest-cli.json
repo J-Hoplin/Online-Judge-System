@@ -33,6 +33,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/aws-sqs/tsconfig.lib.json"
       }
+    },
+    "queue": {
+      "type": "library",
+      "root": "libs/queue",
+      "entryFile": "index",
+      "sourceRoot": "libs/queue/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/queue/tsconfig.lib.json"
+      }
     }
   }
 }

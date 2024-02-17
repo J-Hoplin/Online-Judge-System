@@ -4,9 +4,13 @@ import { InitializeAdmin } from 'app/admin-init';
 import { AppModule } from 'app/app.module';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { Judge0Service } from 'judge/judge0';
+import { QueueService } from 'queue/queue/strategy';
 import * as request from 'supertest';
 import { userSignupGen } from 'test/mock-generator';
-import { JudgeLibraryMockProvider } from 'test/mock.provider';
+import {
+  JudgeLibraryMockProvider,
+  QueueLibraryMockProvider,
+} from 'test/mock.provider';
 import { BearerTokenHeader } from 'test/test-utils';
 
 describe('/judge Judge Controller', () => {
@@ -32,6 +36,8 @@ describe('/judge Judge Controller', () => {
     })
       .overrideProvider(Judge0Service)
       .useValue(JudgeLibraryMockProvider.useValue)
+      .overrideProvider(QueueService)
+      .useValue(QueueLibraryMockProvider.useValue)
       .compile();
 
     app = testModule.createNestApplication();

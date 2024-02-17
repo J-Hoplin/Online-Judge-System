@@ -1,13 +1,22 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { Injectable } from '@nestjs/common';
-import { SQSTask } from './type';
+import { QueueTask } from './type';
+import { QueueService } from './queue-strategy.abstract.service';
+/**
+ * Queue Strategy
+ *
+ * AWS Environment
+ */
 
 @Injectable()
-export class AwsSqsService {
+export class AwsSqsQueueService extends QueueService {
   private sqsClient: SQSClient;
   private sqsQueue: string;
 
   constructor() {
+    // Super class constructor
+    super();
+
     // SQS Client
     this.sqsClient = new SQSClient({
       region: process.env.AWS_REGION,
@@ -21,7 +30,7 @@ export class AwsSqsService {
     this.sqsQueue = process.env.AWS_SQS_QUEUE;
   }
 
-  async sendTask(task: SQSTask) {
+  async sendTask(task: QueueTask) {
     // Do send task if it's dev or production
     if (process.env.ENV === 'dev' || process.env.ENV === 'production') {
       const command = new SendMessageCommand({
