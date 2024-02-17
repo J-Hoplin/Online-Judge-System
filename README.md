@@ -18,14 +18,21 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
 - [📊Test Coverage](#test-coverage)
 - [🧰Technical Stack](#technical-stack)
 - [✅Run Application](#run-application)
-- [🐳Run Application With Docker](#run-application-with-docker)
+- [🐳Run Application with Docker](#run-application-with-docker)
+- [🐰Run Application with Rabbit MQ worker locally](#run-application-with-rabbit-mq-locally)
 - [📄Run E2E Test](#run-e2e-test)
 - [📄Run Unit Test](#run-unit-test)
 - [📝TODO](#todo)
 
 ## Diagram
 
-![](img/diagram.png)
+### AWS Environment - AWS Elastic Beanstalk Worker
+
+![](img/aws-env.png)
+
+### Local docker environment - Rabbit MQ Worker
+
+![](img/rmq-env.png)
 
 ## Github Actions CI flow
 
@@ -135,6 +142,42 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
    yarn docker:down
    ```
 
+## Run Application with Rabbit MQ locally
+
+### `.env` setting to use Docker Rabbit MQ worker
+
+To use Rabbit MQ worker, you need to set both `TYPE` and `QUEUE_TYPE` as `webserver` and `RMQ` each. **This is fundamental setting to use Rabbit MQ worker setting.**
+
+```
+TYPE="webserver"
+
+...
+
+
+QUEUE_TYPE="RMQ" # SQS or RMQ. Change if you use SQS for application
+RMQ_URL="amqp://root:password@localhost:5672"
+RMQ_WORKER_QUEUE_NAME="JUDGE_QUEUE"
+
+...
+
+```
+
+To modify docker rabbit mq worker's `.env` file, modify `.docker.worker.env`. And if you want to modify docker webserver application, modify `.docker.env`.
+
+### How to build
+
+1. Build docker image
+
+   ```
+   yarn docker:build
+   ```
+
+2. Run integrated application docker compose environment
+
+   ```
+   yarn docker:up
+   ```
+
 ## Run E2E Test
 
 - Config: test/jest-e2e.json
@@ -195,7 +238,7 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
 
 ## TODO
 
-- [ ] Apply Strategy Pattern to Asynchronous Worker
+- [x] Apply Strategy Pattern to Asynchronous Worker
   - Use Nest.js Custom Provider
   - Rabbit MQ Strategy & AWS SQS Strategy
 - [ ] Make Online Judge Server with Golang
