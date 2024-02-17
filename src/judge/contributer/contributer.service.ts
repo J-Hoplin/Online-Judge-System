@@ -45,6 +45,9 @@ export class ContributerService {
     return this.prisma.problem.create({
       data: {
         title: 'New Problem',
+        problem: 'Problem Here',
+        input: 'Input Here',
+        output: 'Output Here',
         contributerId: uid,
         tags: [],
       },
