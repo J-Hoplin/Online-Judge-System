@@ -1,7 +1,7 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { Injectable } from '@nestjs/common';
 import { QueueTask } from './type';
-import { QueueStrategy } from './queue-strategy.abstract.service';
+import { QueueService } from './queue-strategy.abstract.service';
 /**
  * Queue Strategy
  *
@@ -9,7 +9,7 @@ import { QueueStrategy } from './queue-strategy.abstract.service';
  */
 
 @Injectable()
-export class AwsSqsQueueService extends QueueStrategy {
+export class AwsSqsQueueService extends QueueService {
   private sqsClient: SQSClient;
   private sqsQueue: string;
 
@@ -40,5 +40,6 @@ export class AwsSqsQueueService extends QueueStrategy {
 
       await this.sqsClient.send(command);
     }
+    return '';
   }
 }
