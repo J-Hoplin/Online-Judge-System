@@ -30,10 +30,9 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
 
 ![](img/aws-env.png)
 
-### Local docker environment - Rabbit MQ Worker
+### Docker environment - Rabbit MQ Worker
 
 <img src="img/rmq-env.png" alt="drawing" width="450px" height="500px"/>
-<!-- ![](img/rmq-env.png) -->
 
 ## Github Actions CI flow
 
