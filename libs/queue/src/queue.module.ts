@@ -10,7 +10,7 @@ import { AwsSqsQueueService } from './strategy';
     RabbitMQService,
     {
       useClass:
-        process.env.QUEUE_TYPE === 'AWS' ? AwsSqsQueueService : RabbitMQService,
+        process.env.QUEUE_TYPE === 'SQS' ? AwsSqsQueueService : RabbitMQService,
       provide: QueueService,
     },
   ],

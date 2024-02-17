@@ -21,6 +21,7 @@ services:
     depends_on:
       - db
       - rmq
+      - worker
     networks:
       - system
   redis:
@@ -41,6 +42,15 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=root
       - RABBITMQ_DEFAULT_PASS=password
+  worker:
+    image: online-judge
+    env_file:
+      - ./.docker.worker.env
+    depends_on:
+      - db
+      - rmq
+    networks:
+      - system
 networks:
   system:
     driver: bridge
