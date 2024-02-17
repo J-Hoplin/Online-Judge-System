@@ -154,7 +154,7 @@ TYPE="webserver"
 ...
 
 
-QUEUE_TYPE="RMQ" # SQS or RMQ. Change if you use SQS for application
+QUEUE_TYPE="RMQ"
 RMQ_URL="amqp://root:password@localhost:5672"
 RMQ_WORKER_QUEUE_NAME="JUDGE_QUEUE"
 
