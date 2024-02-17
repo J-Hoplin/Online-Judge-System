@@ -10,5 +10,5 @@ export class WorkerDto implements QueueTask {
 
   @ApiProperty()
   @IsNotEmpty()
-  id: string | number;
+  id: number;
 }

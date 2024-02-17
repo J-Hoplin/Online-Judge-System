@@ -1,11 +1,11 @@
 import { INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions } from '@nestjs/microservices';
-import { AppModule } from './app.module';
+import { WorkerModule } from './worker/worker.module';
 
 export async function RmqWorkerInit(): Promise<INestMicroservice> {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
+    WorkerModule,
     {
       options: {
         urls: [process.env.RMQ_URL],

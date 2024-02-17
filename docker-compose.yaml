@@ -46,6 +46,7 @@ services:
     image: online-judge
     env_file:
       - ./.docker.worker.env
+    restart: 'unless-stopped'
     depends_on:
       - db
       - rmq

@@ -16,6 +16,7 @@
     "db:push": "prisma db push",
     "rmq:dev:up": "docker compose up -d rmq",
     "rmq:dev:down": "docker compose down rmq",
+    "docker:build": "docker build -t online-judge .",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:start": "yarn db:push && yarn db:generate && yarn start",

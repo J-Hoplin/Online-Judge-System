@@ -59,7 +59,7 @@ export class WorkerService {
     }
   }
 
-  async correctionWithExample(
+  private async correctionWithExample(
     problemId: number,
     submission: SubmissionDomain,
     problem: ProblemDomain,
