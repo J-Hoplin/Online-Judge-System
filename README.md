@@ -26,6 +26,8 @@ Use web scraper to fill problem and problem example datas. **You need to run thi
 
 ## Diagram
 
+**You can either use AWS Environment or Docker envionment with this single repository**
+
 ### AWS Environment - AWS Elastic Beanstalk Worker
 
 ![](img/aws-env.png)
