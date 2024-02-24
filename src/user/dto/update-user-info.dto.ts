@@ -31,4 +31,12 @@ export class UpdateUserInfoDto extends PickType(UserDomain, [
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({
+    required: false,
+    type: 'string',
+    format: 'binary',
+  })
+  @IsOptional()
+  profile?: Express.Multer.File;
 }

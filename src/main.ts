@@ -1,35 +1,30 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { InitializeAdmin } from './admin-init';
-import { AppModule } from './app.module';
+import { config } from 'dotenv';
+import { AppServerInit } from './app.webserver';
+import { RmqWorkerInit } from './app.worker';
+import { Logger } from '@nestjs/common';
+
+config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.enableCors();
-  app.useGlobalPipes(
-    // Docs: https://docs.nestjs.com/techniques/validation
-    new ValidationPipe({
-      skipNullProperties: true,
-      whitelist: true,
-    }),
-  );
-  // Swagger
-  const config = new DocumentBuilder()
-    .setTitle('Online-Judge-Server')
-    .setDescription('Online Judge Server')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-
-  await InitializeAdmin(app);
-
-  // Initialize Swagger Document
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document, {
-    explorer: true,
-  });
-
-  await app.listen(3000);
+  const logger = new Logger('Bootstrap');
+  // If Queue use SQS -> Worker should be also webserver
+  if (process.env.QUEUE_TYPE === 'SQS') {
+    const app = await AppServerInit();
+    logger.log('Local Webserver Initialized');
+    await app.listen(process.env.PORT || 3000);
+  } else {
+    // Use RMQ and type is worker
+    if (process.env.TYPE === 'worker') {
+      const app = await RmqWorkerInit();
+      logger.log('Rabbit MQ Worker Initialized');
+      await app.listen();
+    }
+    // Use RMQ and type is webserver
+    else {
+      const app = await AppServerInit();
+      logger.log('Local Webserver Initialized');
+      await app.listen(process.env.PORT || 3000);
+    }
+  }
 }
 bootstrap();

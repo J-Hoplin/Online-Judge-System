@@ -24,6 +24,11 @@ export class UserDomain implements User {
   @ApiProperty({
     required: false,
   })
+  profileImage: string;
+
+  @ApiProperty({
+    required: false,
+  })
   github: string;
 
   @ApiProperty({

@@ -1,73 +1,247 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Online Judge System API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+- Author: J-Hoplin
+- Team
+  - J-Hoplin: Backend & Infrastructure
+  - Oseungkwon: Frontend
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Web Scraper
 
-## Description
+Use web scraper to fill problem and problem example datas. **You need to run this scraper after you execute `Online Judge System` once.**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Repository](https://github.com/J-Hoplin/Online-Judge-Scraper)
 
-## Installation
+## Contents
 
-```bash
-$ yarn install
+- [📦Diagram](#diagram)
+- [📦Github Actions CI flow](#github-actions-ci-flow)
+- [📊Test Coverage](#test-coverage)
+- [🧰Technical Stack](#technical-stack)
+- [✅Run Application](#run-application)
+- [🐳Run Application with Docker](#run-application-with-docker)
+- [🐰Run Application with Rabbit MQ worker locally](#run-application-with-rabbit-mq-locally)
+- [📄Run E2E Test](#run-e2e-test)
+- [📄Run Unit Test](#run-unit-test)
+- [📝TODO](#todo)
+
+## Diagram
+
+**You can either use AWS Environment or Docker envionment with this single repository**
+
+### AWS Environment - AWS Elastic Beanstalk Worker
+
+![](img/aws-env.png)
+
+### Docker environment - Rabbit MQ Worker
+
+<img src="img/rmq-env.png" alt="drawing" width="450px" height="500px"/>
+
+## Github Actions CI flow
+
+![](img/github-action-flow.png)
+
+## Frontend Repository
+
+- Author: Oseungkwon
+- [Repository](https://github.com/OseungKwon/Online-Judge-System-Web)
+
+## Test Coverage
+
+- E2E Test: 88.12%
+- Unit & Integration Test: 79.13%
+
+## Technical Stack
+
+- Language
+  - TypeScript(Node.js v18 Runtime)
+- Framework
+  - Nest.js
+- ORM
+  - Prisma ORM
+- Database(Persistence & Caching)
+  - MySQL 8.0
+  - Redis
+  - AWS S3
+- Issue Tracking
+  - Sentry
+- Proxy Server
+  - Nginx
+- Infrastructure
+  - Docker & Docker-Compose
+  - AWS Elastic Beanstalk(EC2 Instance)
+    - Node.js Runtime x2 (Worker Server & Web Server)
+    - Docker Runtime x1
+    - AWS Worker Communication
+  - AWS Auto Scaling Group
+  - AWS SQS: For worker server
+  - AWS S3: Build Versioning
+- Test
+  - Jest
+  - Jest-Extended
+- CI/CD
+  - Github Actions
+  - Code Pipeline & Code Build
+- Alert
+  - Discord
+
+## Run Application
+
+1. Git clone repository
+
+   ```
+   git clone https://github.com/J-Hoplin/Online-Judge-System.git
+
+   cd Online-Judge-System
+   ```
+
+2. Install dependencies
+
+   ```
+   yarn install
+   ```
+
+3. Run/Stop database with docker
+
+   ```
+   # Start
+   yarn db:dev:up
+   ```
+
+   ```
+   # Stop
+   yarn db:dev:down
+   ```
+
+4. Sync prisma schema to database
+
+   ```
+   yarn db:push
+   ```
+
+5. Run application
+
+   ```
+   yarn dev
+   ```
+
+## Run Application with docker
+
+1. Build docker image
+
+   ```
+   docker build -t online-judge .
+   ```
+
+2. Run with docker enviornment
+
+   ```
+   yarn docker:up
+   ```
+
+3. Remove docker environment
+
+   ```
+   yarn docker:down
+   ```
+
+## Run Application with Rabbit MQ locally
+
+### `.env` setting to use Docker Rabbit MQ worker
+
+To use Rabbit MQ worker, you need to set both `TYPE` and `QUEUE_TYPE` as `webserver` and `RMQ` each. **This is fundamental setting to use Rabbit MQ worker setting.**
+
+```
+TYPE="worker"
+
+...
+
+
+QUEUE_TYPE="RMQ"
+RMQ_URL="amqp://root:password@rmq:5672"
+RMQ_WORKER_QUEUE_NAME="JUDGE_QUEUE"
+
+...
+
 ```
 
-## Running the app
+To modify docker rabbit mq worker's `.env` file, modify `.docker.worker.env`. And if you want to modify docker webserver application, modify `.docker.env`.
 
-```bash
-# development
-$ yarn run start
+### How to build
 
-# watch mode
-$ yarn run start:dev
+1. Build docker image
 
-# production mode
-$ yarn run start:prod
-```
+   ```
+   yarn docker:build
+   ```
 
-## Test
+2. Run integrated application docker compose environment
 
-```bash
-# unit tests
-$ yarn run test
+   ```
+   yarn docker:up
+   ```
 
-# e2e tests
-$ yarn run test:e2e
+## Run E2E Test
 
-# test coverage
-$ yarn run test:cov
-```
+- Config: test/jest-e2e.json
+- Mock Provider: test/mock.provider.ts
 
-## Support
+1. Run database
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+   ```
+   yarn db:dev:up
+   ```
 
-## Stay in touch
+2. Initialize test database
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+   ```
+   yarn test:init
+   ```
 
-## License
+3. Run E2E Test
 
-Nest is [MIT licensed](LICENSE).
+   ```
+   yarn test:e2e
+   ```
+
+4. Run E2E Coverage Test
+
+   ```
+   yarn test:e2e:cov
+   ```
+
+## Run Unit Test
+
+- Config: test/jest-unit.json
+- Mock Provider: test/mock.provider.ts
+
+1. Run database
+
+   ```
+   yarn db:dev:up
+   ```
+
+2. Initialize test database
+
+   ```
+   yarn test:init
+   ```
+
+3. Run E2E Test
+
+   ```
+   yarn test:unit
+   ```
+
+4. Run E2E Coverage Test
+
+   ```
+   yarn test:unit:cov
+   ```
+
+## TODO
+
+- [x] Apply Strategy Pattern to Asynchronous Worker
+  - Use Nest.js Custom Provider
+  - Rabbit MQ Strategy & AWS SQS Strategy
+- [ ] Make Online Judge Server with Golang
+  - Now using [Judge0](https://judge0.com) based custom server

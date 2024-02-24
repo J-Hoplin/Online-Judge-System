@@ -30,6 +30,9 @@ export class ProblemDomain implements Problem {
   tags: string[] | Prisma.JsonValue;
 
   @ApiProperty()
+  isOpen: boolean;
+
+  @ApiProperty()
   isArchived: boolean;
 
   @ApiProperty()

@@ -2,11 +2,15 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PaginateObject } from 'app/decorator';
 import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { PrismaService } from 'app/prisma/prisma.service';
-import { UpdateExampleDto } from './dto';
+import { QueueService } from 'queue/queue/strategy';
+import { CreateExampleDto, UpdateExampleDto } from './dto';
 
 @Injectable()
 export class ContributerService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private queueService: QueueService,
+  ) {}
 
   async listProblem(uid: string, search: string, pagination: PaginateObject) {
     return this.prisma.problem.findMany({
@@ -41,6 +45,9 @@ export class ContributerService {
     return this.prisma.problem.create({
       data: {
         title: 'New Problem',
+        problem: 'Problem Here',
+        input: 'Input Here',
+        output: 'Output Here',
         contributerId: uid,
         tags: [],
       },
@@ -48,13 +55,6 @@ export class ContributerService {
   }
 
   async updateProblem(uid: string, pid: number, dto: UpdateProblmeDto) {
-    const findProblem = await this.prisma.problem.findUnique({
-      where: {
-        id: pid,
-        contributerId: uid,
-      },
-    });
-
     // If time limit is lower than 0
     if (dto?.timeLimit && dto.timeLimit < 0) {
       dto.timeLimit = 5;
@@ -97,9 +97,10 @@ export class ContributerService {
     return updatedProblem;
   }
 
-  async createExmaple(uid: string, pid: number) {
+  async createExmaple(uid: string, pid: number, dto: CreateExampleDto) {
     return this.prisma.problemExample.create({
       data: {
+        ...dto,
         problemId: pid,
       },
     });
@@ -111,7 +112,7 @@ export class ContributerService {
     eid: number,
     dto: UpdateExampleDto,
   ) {
-    const findExample = await this.prisma.problemExample.findUnique({
+    const previousExample = await this.prisma.problemExample.findUnique({
       where: {
         id: eid,
         problemId: pid,
@@ -120,9 +121,23 @@ export class ContributerService {
         },
       },
     });
-    if (!findExample) {
+
+    if (!previousExample) {
       throw new ForbiddenException('FORBIDDEN_REQUEST');
     }
+
+    // Only trigger re-correction if it input or out-put modified
+    if (
+      dto.input !== previousExample.input ||
+      dto.output !== previousExample.output
+    ) {
+      // Send task to client
+      await this.queueService.sendTask({
+        id: pid,
+        message: 'RE_CORRECTION',
+      });
+    }
+
     return this.prisma.problemExample.update({
       where: {
         id: eid,

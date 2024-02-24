@@ -6,9 +6,11 @@ import { userSignupGen } from 'test/mock-generator';
 import * as request from 'supertest';
 import { BearerTokenHeader } from 'test/test-utils';
 import { User } from '@prisma/client';
+import { PrismaService } from 'app/prisma/prisma.service';
 
 describe('/user User Controller', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   // MockUser
   const user1 = userSignupGen();
@@ -24,11 +26,14 @@ describe('/user User Controller', () => {
 
     // Initialize nest application
     app = testModule.createNestApplication();
+    prisma = testModule.get<PrismaService>(PrismaService);
+
     await InitializeAdmin(app);
     await app.init();
   });
 
   afterAll(async () => {
+    await prisma.deleteAll();
     await app.close();
   });
 

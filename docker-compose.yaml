@@ -5,15 +5,53 @@ services:
     ports:
       - '3306:3306'
     restart: 'unless-stopped'
-    # volumes:
-    #   - system-db:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=hoplin1234!
       - MYSQL_ROOT_HOST=%
       - MYSQL_DATABASE=judge
+    networks:
+      - system
+  api:
+    image: online-judge
+    ports:
+      - '3001:3000'
+    restart: 'unless-stopped'
+    env_file:
+      - ./.docker.env
+    depends_on:
+      - db
+      - rmq
+      - worker
+    networks:
+      - system
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    networks:
+      - system
+  rmq:
+    image: rabbitmq:3-management
+    ports:
+      - '1883:1883'
+      - '15672:15672'
+      - '5672:5672'
+    restart: 'unless-stopped'
+    networks:
+      - system
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=password
+  worker:
+    image: online-judge
+    env_file:
+      - ./.docker.worker.env
+    restart: 'unless-stopped'
+    depends_on:
+      - db
+      - rmq
+    networks:
+      - system
 networks:
   system:
     driver: bridge
-# volumes:
-#   system-db:
-#     external: false

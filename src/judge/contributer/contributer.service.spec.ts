@@ -1,10 +1,13 @@
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContributerService } from './contributer.service';
 import { PrismaModule } from 'app/prisma/prisma.module';
 import { PrismaService } from 'app/prisma/prisma.service';
 import { ProblemDomain, ProblemExampleDomain, UserDomain } from 'domains';
+import { QueueModule } from 'queue/queue';
+import { QueueService } from 'queue/queue/strategy';
 import { userSignupGen } from 'test/mock-generator';
-import { ForbiddenException } from '@nestjs/common';
+import { QueueLibraryMockProvider } from 'test/mock.provider';
+import { ContributerService } from './contributer.service';
 
 describe('ContributerService', () => {
   let service: ContributerService;
@@ -23,9 +26,12 @@ describe('ContributerService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModule],
+      imports: [PrismaModule, QueueModule],
       providers: [ContributerService],
-    }).compile();
+    })
+      .overrideProvider(QueueService)
+      .useValue(QueueLibraryMockProvider.useValue)
+      .compile();
 
     // Initialize module for prisma service
     module.init();
@@ -58,7 +64,11 @@ describe('ContributerService', () => {
     });
     it('should create new example of problem1', async () => {
       // Create example of problem1
-      example1 = await service.createExmaple(user1.id, problem1.id);
+      example1 = await service.createExmaple(user1.id, problem1.id, {
+        input: '2 3 4',
+        output: '5 6 7',
+        isPublic: true,
+      });
       expect(example1).toBeTruthy();
     });
   });
@@ -70,6 +80,7 @@ describe('ContributerService', () => {
         problem: 'Problem',
         input: 'Input',
         output: 'Output',
+        isOpen: true,
         timeLimit: 10,
         memoryLimit: 10,
         tags: ['string'],

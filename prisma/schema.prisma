@@ -12,19 +12,21 @@ datasource db {
 }
 
 model User {
-  id         String       @id @default(uuid())
-  nickname   String       @unique
-  password   String
-  email      String       @unique
-  message    String?
-  github     String?
-  blog       String?
-  type       UserType?    @default(User)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  problems   Problem[]
-  Submission Submission[]
-  Issues     ProblemIssue[]
+  id            String                @id @default(uuid())
+  nickname      String                @unique
+  password      String
+  email         String                @unique
+  message       String?
+  github        String?
+  blog          String?
+  profileImage  String?
+  type          UserType?             @default(User)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  problems      Problem[]
+  Submission    Submission[]
+  Issues        ProblemIssue[]
+  IssueComments ProblemIssueComment[]
 
   @@map("user")
 }
@@ -38,9 +40,9 @@ enum UserType {
 model Problem {
   id            Int    @id @default(autoincrement())
   title         String @default("New Problem") // 제목
-  problem       String @default("Problem Here") // 문제
-  input         String @default("Input Here") // 입력
-  output        String @default("Output Here") // 출력
+  problem       String @db.LongText // 문제
+  input         String @db.LongText // 입력
+  output        String @db.LongText // 출력
   timeLimit     Int    @default(5) // 시간제한(Second)
   memoryLimit   Int    @default(128) // 메모리제한(MB)
   // 1:N relation with User
@@ -52,10 +54,12 @@ model Problem {
   examples ProblemExample[]
   tags     Json
 
+  isOpen     Boolean   @default(false)
   isArchived Boolean   @default(false)
-  deletedAt  DateTime?  
+  deletedAt  DateTime?
 
-  issues    ProblemIssue[]
+  issues   ProblemIssue[]
+  comments ProblemIssueComment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,8 +69,8 @@ model Problem {
 
 model ProblemExample {
   id       Int     @id @default(autoincrement())
-  input    String  @default("")
-  output   String  @default("")
+  input    String  @db.LongText
+  output   String  @db.LongText
   isPublic Boolean @default(true) // If it's public example
 
   // 1:N relation with Problem
@@ -82,10 +86,10 @@ enum ResponseType {
   TIME_LIMIT_EXCEED // 5
   COMPILE_ERROR // 6
   RUNTIME_ERROR_SIGSEGV // 7
-  RUNTIME_ERROR_SIGXFSZ //8
+  RUNTIME_ERROR_SIGXFSZ // 8
   RUNTIME_ERROR_SIGFPE // 9
   RUNTIME_ERROR_SIGABRT // 10
-  RUNTIME_ERROR_NZEC //11
+  RUNTIME_ERROR_NZEC // 11
   RUNTIME_ERROR // 12
   INTERNAL_ERROR // 13
   EXEC_FORMAT_ERROR // 14
@@ -98,6 +102,7 @@ model Submission {
   codeLength Int          @default(0)
   memory     Float        @default(0) // KB
   time       Float        @default(0) // second
+  isPublic   Boolean      @default(false)
   languageId Int // Language ID
   language   String // Language Name
   isCorrect  Boolean
@@ -117,17 +122,33 @@ model Submission {
 }
 
 model ProblemIssue {
-  id        Int     @id  @default(autoincrement())
-  title     String  @db.VarChar(100)
+  id        Int     @id @default(autoincrement())
+  title     String  @default("Title Here") @db.VarChar(100)
   content   String  @db.Text
-
   // 1:N relation with Problem
-  targetId  Int
-  target    Problem @relation(references: [id], fields: [targetId], onDelete: Cascade)
-
+  problemId Int
+  problem   Problem @relation(references: [id], fields: [problemId], onDelete: Cascade)
   // 1:N relation with User
-  issuerId  String 
-  issuer    User    @relation(references: [id], fields: [issuerId],onDelete: Cascade)
+  issuerId  String
+  issuer    User    @relation(references: [id], fields: [issuerId], onDelete: Cascade)
+
+  comments ProblemIssueComment[]
 
   @@map("problem_issue")
+}
+
+model ProblemIssueComment {
+  id      Int    @id @default(autoincrement())
+  content String @db.Text
+
+  issueId Int
+  issue   ProblemIssue @relation(fields: [issueId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  problemId Int
+  problem   Problem @relation(references: [id], fields: [problemId])
+
+  @@map("problem_issue_comment")
 }

@@ -8,11 +8,16 @@ export class Judge0Service {
   private instance: AxiosInstance;
   constructor() {
     const judge0Endpoint = process.env.JUDGE_SERVER_ENDPOINT;
+    const judge0AuthKey = process.env.JUDGE_AUTH_KEY;
     if (!judge0Endpoint) {
       throw new Error('Judge Server Endpoint not found');
     }
     this.instance = axios.create({
-      baseURL: judge0Endpoint,
+      baseURL: `https://${judge0Endpoint}`,
+      headers: {
+        'X-RapidAPI-Key': judge0AuthKey ?? '',
+        'X-RapidAPI-Host': judge0Endpoint,
+      },
     });
   }
 

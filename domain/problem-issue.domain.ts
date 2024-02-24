@@ -12,7 +12,7 @@ export class ProblemIssueDomain implements ProblemIssue {
   content: string;
 
   @ApiProperty()
-  targetId: number;
+  problemId: number;
 
   @ApiProperty()
   issuerId: string;

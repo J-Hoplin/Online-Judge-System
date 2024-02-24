@@ -17,7 +17,7 @@ import { RoleGuard } from 'app/guard';
 import { UpdateProblmeDto } from 'app/judge/contributer/dto/update-problem.dto';
 import { ContributerDocs } from './contributer.docs';
 import { ContributerService } from './contributer.service';
-import { UpdateExampleDto } from './dto';
+import { CreateExampleDto, UpdateExampleDto } from './dto';
 import { ContributerProblemGuard } from './decorator/contributer-problem.guard';
 
 @Controller()
@@ -43,7 +43,7 @@ export class ContributerController {
   @ContributerDocs.readProblem()
   readProblem(
     @GetUser('id') uid: string,
-    @Query('pid', ParseIntPipe) pid: number,
+    @Param('pid', ParseIntPipe) pid: number,
   ) {
     return this.contributerService.readProblem(uid, pid);
   }
@@ -81,8 +81,9 @@ export class ContributerController {
   createExample(
     @GetUser('id') uid: string,
     @Param('pid', ParseIntPipe) pid: number,
+    @Body() dto: CreateExampleDto,
   ) {
-    return this.contributerService.createExmaple(uid, pid);
+    return this.contributerService.createExmaple(uid, pid, dto);
   }
 
   @Patch('problems/:pid/examples/:eid')

@@ -1,6 +1,7 @@
 import { OmitType } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -17,27 +18,31 @@ export class UpdateProblmeDto extends OmitType(ProblemDomain, [
   'deletedAt',
 ]) {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   title: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   problem: string;
 
+  @IsBoolean()
+  @IsOptional()
+  isOpen: boolean;
+
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   input: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   output: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   timeLimit: number;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   memoryLimit: number;
 
   @IsArray()

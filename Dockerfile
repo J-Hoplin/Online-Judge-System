@@ -2,9 +2,7 @@ FROM node:21-bullseye
 
 COPY . .
 
-RUN yarn install\
-npx prisma migrate
+RUN yarn install
 
-
-CMD [ "start" ]
+CMD [ "docker:start" ]
 ENTRYPOINT [ "yarn" ]

@@ -47,6 +47,12 @@
       ],
       "aws-sqs/aws-sqs/*": [
         "libs/aws-sqs/src/*"
+      ],
+      "queue/queue": [
+        "libs/queue/src"
+      ],
+      "queue/queue/*": [
+        "libs/queue/src/*"
       ]
     }
   }

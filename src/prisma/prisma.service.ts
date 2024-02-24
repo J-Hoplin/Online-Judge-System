@@ -79,11 +79,13 @@ export class PrismaService
   }
 
   async deleteAll() {
-    // Consider order of delete by relation
-    await this.$transaction([
-      this.problemExample.deleteMany(),
-      this.problem.deleteMany(),
-      this.user.deleteMany(),
-    ]);
+    // await this.$transaction([
+    //   this.submission.deleteMany(),
+    //   this.problemIssueComment.deleteMany(),
+    //   this.problemIssue.deleteMany(),
+    //   this.problemExample.deleteMany(),
+    //   this.problem.deleteMany(),
+    //   this.user.deleteMany(),
+    // ]);
   }
 }

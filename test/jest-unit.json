@@ -6,16 +6,28 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "testTimeout": 20000,
+  "setupFilesAfterEnv": ["<rootDir>/../test/jest-extended.ts"],
   "coverageDirectory": "../unit-coverage",
-  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "collectCoverageFrom": [
+    "**/*\\.service\\.(t|j)s",
+    "!**/worker/**",
+    "!**/system-logger/**",
+    "!**/prisma/**",
+    "!**/artifact/**"
+  ],
   "moduleNameMapper": {
     "app/(.*)": "<rootDir>/../src/$1",
     "test/(.*)": "<rootDir>/../test/$1",
-    "domains": "<rootDir>/../domain/$1",
+    "domains": "<rootDir>/../domain",
     "domains/(.*)": "<rootDir>/../domain/$1",
     "s3/aws-s3": "<rootDir>/../libs/aws-s3/src",
     "s3/aws-s3/(.*)": "<rootDir>/../libs/aws-s3/src/$1",
     "judge/judge0": "<rootDir>/../libs/judge0/src",
-    "judge/judge0/(.*)": "<rootDir>/../libs/judge0/src/$1"
+    "judge/judge0/(.*)": "<rootDir>/../libs/judge0/src/$1",
+    "aws-sqs/aws-sqs": "<rootDir>/../libs/aws-sqs/src",
+    "aws-sqs/aws-sqs/(.*)": "<rootDir>/../libs/aws-sqs/src/$1",
+    "queue/queue/(.*)": "<rootDir>/../libs/queue/src/$1",
+    "queue/queue": "<rootDir>/../libs/queue/src"
   }
 }

@@ -1,9 +1,7 @@
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
-  Inject,
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'app/prisma/prisma.service';
@@ -19,7 +17,8 @@ import { Request } from 'express';
 
 @Injectable()
 export class ContributerProblemGuard implements CanActivate {
-  constructor(@Inject(PrismaService) private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
@@ -37,7 +36,10 @@ export class ContributerProblemGuard implements CanActivate {
       });
       return true;
     } catch (err) {
-      throw new ForbiddenException('FORBIDDEN_REQUEST');
+      if (err.code === 'P2025') {
+        throw new ForbiddenException('FORBIDDEN_REQUEST');
+      }
+      throw err;
     }
   }
 }

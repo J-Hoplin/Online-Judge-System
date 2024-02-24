@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `problem` MODIFY `problem` LONGTEXT NOT NULL,
+    MODIFY `input` LONGTEXT NOT NULL,
+    MODIFY `output` LONGTEXT NOT NULL;

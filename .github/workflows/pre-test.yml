@@ -1,19 +1,15 @@
-name: CI-Unit-Test
+name: CI-Pull-Request-Pretest
 on:
   pull_request:
     branches:
       - dev
-  workflow_call:
-    inputs:
-      build_id:
-        required: true
-        type: number
-      deploy_target:
-        required: true
-        type: string
+      - production
+    paths:
+      - '**.ts'
 run-name: Unit/E2E test of ${{ github.ref_name }} by ${{ github.actor }}
 jobs:
-  unit-testing:
+  build:
+    name: Application Build Test & Set up & Initialize Test Database Server
     runs-on: ubuntu-latest
     steps:
       # Checkout repository codes
@@ -24,6 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: yarn
       - name: Initialize .ci.env
         run: |
           touch .ci.env
@@ -32,18 +29,70 @@ jobs:
           echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
           echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
           echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
+          echo "AWS_REGION"=${{secrets.AWS_REGION}}>> .ci.env
+          echo "AWS_ACCESS_ID=${{secrets.AWS_ACCESS_ID}}" >> .ci.env
+          echo "AWS_ACCESS_SECRET=${{secrets.AWS_ACCESS_SECRET}}" >> .ci.env
+          echo "AWS_SQS_QUEUE=${{secrets.AWS_SQS_QUEUE}}" >> .ci.env
+          echo "AWS_S3_BUCKET=${{secrets.AWS_S3_BUCKET}}" >> .ci.env
       - name: Install Node.js Dependencies
-        run: npm install --force
-      - name: Install dotenv-cli for dotenv cli
-        run: npm install -g dotenv-cli
+        run: yarn install --force
+      - name: Install dotenv-cli for CI script
+        run: yarn global add dotenv-cli
+      - id: build-phase
+        name: Check Nest.js Application Build
+        continue-on-error: true
+        run: yarn build
+      # Push Prisma Schema to test DB
       - name: Initialize Prisma Client
-        run: npm run ci:init
+        run: yarn ci:init
+      # Preserve Artifacts for test
+      - name: Preserve Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-result
+          path: .
+      - name: 'Discord Alert - Success'
+        if: steps.build-phase.outcome == 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: 'Build & Setup: Success'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Discord Alert - Failed'
+        if: steps.build-phase.outcome != 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: 'Build & Setup: Fail'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.build-phase.outcome != 'success'
+        run: exit1
+
+  unit-testing:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Setup environment for Node.js 18
+      - name: Node.js version 18 Environment setting
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Mount volume of pre-build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-result
+          path: .
+      - name: Grant Permission to artifacts
+        run: chmod -R 777 .
+      - name: Install dotenv-cli for CI script
+        run: yarn global add dotenv-cli
       - id: unit-test-phase
         name: Run Unit Test
-        run: npm run ci:unit
+        continue-on-error: true
+        run: yarn ci:unit
       - name: 'Discord Alert - Success'
         if: steps.unit-test-phase.outcome == 'success'
-        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
@@ -56,36 +105,33 @@ jobs:
           severity: error
           details: 'Unit Test Result: Fail'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.unit-test-phase.outcome != 'success'
+        run: exit1
 
   e2e-testing:
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Repository Checkout
-        uses: actions/checkout@v4
       - name: Node.js version 18 Environment setting
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      - name: Initialize .ci.env
-        run: |
-          touch .ci.env
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL}}" >> .ci.env
-          echo "ADMIN_EMAIL=${{secrets.ADMIN_EMAIL}}" >> .ci.env
-          echo "ADMIN_PW=${{secrets.ADMIN_PW}}" >> .ci.env
-          echo "JWT_SECRET=${{secrets.JWT_SECRET}}" >> .ci.env
-          echo "JUDGE_SERVER_ENDPOINT=${{secrets.JUDGE_SERVER_ENDPOINT}}" >> .ci.env
-      - name: Install Node.js Dependencies
-        run: npm install --force
-      - name: Install dotenv-cli for dotenv cli
-        run: npm install -g dotenv-cli
-      - name: Initialize Prisma Client
-        run: npm run ci:init
+      - name: Mount volume of pre-build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-result
+          path: .
+      - name: Grant Permission to artifacts
+        run: chmod -R 777 .
+      - name: Install dotenv-cli for CI script
+        run: yarn global add dotenv-cli
       - id: e2e-test-phase
         name: Run E2E Test
-        run: npm run ci:e2e
+        continue-on-error: true
+        run: yarn ci:e2e
       - name: 'Discord Alert - Success'
         if: steps.e2e-test-phase.outcome == 'success'
-        continue-on-error: true
         uses: rjstone/discord-webhook-notify@v1
         with:
           severity: info
@@ -98,3 +144,49 @@ jobs:
           severity: error
           details: 'E2E Test Result: Failed'
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.e2e-test-phase.outcome != 'success'
+        run: exit1
+
+  tear-down:
+    needs: [unit-testing, e2e-testing]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Node.js version 18 Environment setting
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Mount volume of pre-build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-result
+          path: .
+      - name: Grant Permission to artifacts
+        run: chmod -R 777 .
+      - name: Install dotenv-cli for CI script
+        run: yarn global add dotenv-cli
+      - id: tear-down-phase
+        name: Test Database tear-down
+        continue-on-error: true
+        run: dotenv -e .ci.env -- node node_modules/prisma/build/index.js db push --force-reset
+      - uses: geekyeggo/delete-artifact@v4
+        with:
+          name: build-result
+          token: ${{secrets.TOKEN}}
+      - name: 'Discord Alert - Success'
+        if: steps.tear-down-phase.outcome == 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: 'Test DB Tear down: Success'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Discord Alert - Fail'
+        if: steps.tear-down-phase.outcome != 'success'
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: 'Test DB Tear down: Failed'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: 'Fail check'
+        if: steps.tear-down-phase.outcome != 'success'
+        run: exit1
